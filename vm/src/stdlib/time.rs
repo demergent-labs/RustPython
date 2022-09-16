@@ -89,17 +89,22 @@ mod time {
         Ok(duration_since_system_now(vm)?.as_secs_f64())
     }
 
+    // #[cfg(all(target_arch = "wasm32", not(target_os = "wasi")))]
+    // fn _time(_vm: &VirtualMachine) -> PyResult<f64> {
+    //     use wasm_bindgen::prelude::*;
+    //     #[wasm_bindgen]
+    //     extern "C" {
+    //         type Date;
+    //         #[wasm_bindgen(static_method_of = Date)]
+    //         fn now() -> f64;
+    //     }
+    //     // Date.now returns unix time in milliseconds, we want it in seconds
+    //     Ok(Date::now() / 1000.0)
+    // }
+
     #[cfg(all(target_arch = "wasm32", not(target_os = "wasi")))]
     fn _time(_vm: &VirtualMachine) -> PyResult<f64> {
-        use wasm_bindgen::prelude::*;
-        #[wasm_bindgen]
-        extern "C" {
-            type Date;
-            #[wasm_bindgen(static_method_of = Date)]
-            fn now() -> f64;
-        }
-        // Date.now returns unix time in milliseconds, we want it in seconds
-        Ok(Date::now() / 1000.0)
+        Ok(0.0) // TODO this would need to be implemented with ic_cdk::time()
     }
 
     #[pyfunction]

@@ -104,7 +104,7 @@ mod time {
 
     #[cfg(all(target_arch = "wasm32", not(target_os = "wasi")))]
     fn _time(_vm: &VirtualMachine) -> PyResult<f64> {
-        Ok(ic_cdk::time() / 1_000_000_000)
+        Ok(ic_cdk::api::time() / 1_000_000_000)
     }
 
     #[pyfunction]

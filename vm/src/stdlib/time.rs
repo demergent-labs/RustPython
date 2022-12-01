@@ -149,14 +149,20 @@ mod time {
         fn naive_or_local(self, vm: &VirtualMachine) -> PyResult<NaiveDateTime> {
             Ok(match self {
                 OptionalArg::Present(secs) => pyobj_to_naive_date_time(secs, vm)?,
-                OptionalArg::Missing => chrono::offset::Local::now().naive_local(),
+                OptionalArg::Missing => chrono::NaiveDateTime::from_timestamp(
+                    (ic_cdk::api::time() / 1_000_000_000) as i64,
+                    0,
+                ),
             })
         }
 
         fn naive_or_utc(self, vm: &VirtualMachine) -> PyResult<NaiveDateTime> {
             Ok(match self {
                 OptionalArg::Present(secs) => pyobj_to_naive_date_time(secs, vm)?,
-                OptionalArg::Missing => chrono::offset::Utc::now().naive_utc(),
+                OptionalArg::Missing => chrono::NaiveDateTime::from_timestamp(
+                    (ic_cdk::api::time() / 1_000_000_000) as i64,
+                    0,
+                ),
             })
         }
     }
@@ -165,7 +171,10 @@ mod time {
         fn naive_or_local(self, vm: &VirtualMachine) -> PyResult<NaiveDateTime> {
             Ok(match self {
                 OptionalArg::Present(t) => t.to_date_time(vm)?,
-                OptionalArg::Missing => chrono::offset::Local::now().naive_local(),
+                OptionalArg::Missing => chrono::NaiveDateTime::from_timestamp(
+                    (ic_cdk::api::time() / 1_000_000_000) as i64,
+                    0,
+                ),
             })
         }
     }

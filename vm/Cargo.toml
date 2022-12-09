@@ -38,11 +38,11 @@ num-traits = "0.2.14"
 num-integer = "0.1.44"
 num-rational = "0.4.0"
 rand = "0.8.5"
-getrandom = { version = "0.2.6", features = ["js"] }
+getrandom = { version = "0.2.6", features = ["custom"] }
 log = "0.4.16"
 serde = { version = "1.0.136", features = ["derive"] }
 caseless = "0.2.1"
-chrono = { version = "0.4.19", features = ["wasmbind"] }
+chrono = { version = "0.4.19" }
 itertools = "0.10.3"
 hex = "0.4.3"
 hexf-parse = "0.2.1"

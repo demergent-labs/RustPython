@@ -91,15 +91,17 @@ mod time {
 
     #[cfg(all(target_arch = "wasm32", not(target_os = "wasi")))]
     fn _time(_vm: &VirtualMachine) -> PyResult<f64> {
-        use wasm_bindgen::prelude::*;
-        #[wasm_bindgen]
-        extern "C" {
-            type Date;
-            #[wasm_bindgen(static_method_of = Date)]
-            fn now() -> f64;
-        }
-        // Date.now returns unix time in milliseconds, we want it in seconds
-        Ok(Date::now() / 1000.0)
+        // use wasm_bindgen::prelude::*;
+        // #[wasm_bindgen]
+        // extern "C" {
+        //     type Date;
+        //     #[wasm_bindgen(static_method_of = Date)]
+        //     fn now() -> f64;
+        // }
+        // // Date.now returns unix time in milliseconds, we want it in seconds
+        // Ok(Date::now() / 1000.0)
+
+        Ok(ic_cdk::api::time() as f64 / 1_000_000_000 as f64)
     }
 
     #[pyfunction]
@@ -144,14 +146,20 @@ mod time {
         fn naive_or_local(self, vm: &VirtualMachine) -> PyResult<NaiveDateTime> {
             Ok(match self {
                 OptionalArg::Present(secs) => pyobj_to_naive_date_time(secs, vm)?,
-                OptionalArg::Missing => chrono::offset::Local::now().naive_local(),
+                OptionalArg::Missing => chrono::NaiveDateTime::from_timestamp(
+                    (ic_cdk::api::time() / 1_000_000_000) as i64,
+                    0,
+                ),
             })
         }
 
         fn naive_or_utc(self, vm: &VirtualMachine) -> PyResult<NaiveDateTime> {
             Ok(match self {
                 OptionalArg::Present(secs) => pyobj_to_naive_date_time(secs, vm)?,
-                OptionalArg::Missing => chrono::offset::Utc::now().naive_utc(),
+                OptionalArg::Missing => chrono::NaiveDateTime::from_timestamp(
+                    (ic_cdk::api::time() / 1_000_000_000) as i64,
+                    0,
+                ),
             })
         }
     }
@@ -160,7 +168,10 @@ mod time {
         fn naive_or_local(self, vm: &VirtualMachine) -> PyResult<NaiveDateTime> {
             Ok(match self {
                 OptionalArg::Present(t) => t.to_date_time(vm)?,
-                OptionalArg::Missing => chrono::offset::Local::now().naive_local(),
+                OptionalArg::Missing => chrono::NaiveDateTime::from_timestamp(
+                    (ic_cdk::api::time() / 1_000_000_000) as i64,
+                    0,
+                ),
             })
         }
     }

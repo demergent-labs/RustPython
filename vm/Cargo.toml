@@ -126,8 +126,8 @@ features = [
   "impl-default", "vcruntime", "ifdef", "netioapi", "memoryapi",
 ]
 
-[target.'cfg(target_arch = "wasm32")'.dependencies]
-wasm-bindgen = "0.2.80"
+# [target.'cfg(target_arch = "wasm32")'.dependencies]
+# wasm-bindgen = "0.2.80"
 
 [build-dependencies]
 itertools = "0.10.3"

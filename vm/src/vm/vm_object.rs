@@ -42,16 +42,17 @@ impl VirtualMachine {
         }
         #[cfg(all(target_arch = "wasm32", not(target_os = "wasi")))]
         {
-            use wasm_bindgen::prelude::*;
-            #[wasm_bindgen]
-            extern "C" {
-                #[wasm_bindgen(js_namespace = console)]
-                fn error(s: &str);
-            }
-            let mut s = String::new();
-            self.write_exception(&mut s, &exc).unwrap();
-            error(&s);
-            panic!("{}; exception backtrace above", msg)
+            // use wasm_bindgen::prelude::*;
+            // #[wasm_bindgen]
+            // extern "C" {
+            //     #[wasm_bindgen(js_namespace = console)]
+            //     fn error(s: &str);
+            // }
+            // let mut s = String::new();
+            // self.write_exception(&mut s, &exc).unwrap();
+            // error(&s);
+            // panic!("{}; exception backtrace above", msg)
+            panic!("{}", msg)
         }
     }
 

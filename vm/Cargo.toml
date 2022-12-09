@@ -38,11 +38,11 @@ num-traits = "0.2.14"
 num-integer = "0.1.44"
 num-rational = "0.4.0"
 rand = "0.8.5"
-getrandom = { version = "0.2.6", features = ["js"] }
+getrandom = { version = "0.2.6", features = ["custom"] }
 log = "0.4.16"
 serde = { version = "1.0.136", features = ["derive"] }
 caseless = "0.2.1"
-chrono = { version = "0.4.19", features = ["wasmbind"] }
+chrono = { version = "=0.4.19" }
 itertools = "0.10.3"
 hex = "0.4.3"
 hexf-parse = "0.2.1"
@@ -71,6 +71,7 @@ flate2 = "1.0.23"
 once_cell = "1.10.0"
 memoffset = "0.6.5"
 optional = "0.5.0"
+ic-cdk = "0.6.8"
 
 # RustPython crates implementing functionality based on CPython
 sre-engine = "0.4.1"
@@ -126,8 +127,8 @@ features = [
   "impl-default", "vcruntime", "ifdef", "netioapi", "memoryapi",
 ]
 
-[target.'cfg(target_arch = "wasm32")'.dependencies]
-wasm-bindgen = "0.2.80"
+# [target.'cfg(target_arch = "wasm32")'.dependencies]
+# wasm-bindgen = "0.2.80"
 
 [build-dependencies]
 itertools = "0.10.3"

@@ -1,5 +1,5 @@
 use super::{setting::Settings, thread, Context, VirtualMachine};
-use crate::{stdlib::atexit, vm::PyBaseExceptionRef, PyResult};
+use crate::{vm::PyBaseExceptionRef, PyResult};
 use std::sync::atomic::Ordering;
 
 /// The general interface for the VM
@@ -48,8 +48,8 @@ impl Interpreter {
         F: FnOnce(&mut VirtualMachine),
     {
         let ctx = Context::genesis();
-        crate::types::TypeZoo::extend(ctx);
-        crate::exceptions::ExceptionZoo::extend(ctx);
+        // crate::types::TypeZoo::extend(ctx);
+        // crate::exceptions::ExceptionZoo::extend(ctx);
         let mut vm = VirtualMachine::new(settings, ctx.clone());
         init(&mut vm);
         vm.initialize();
@@ -125,7 +125,7 @@ impl Interpreter {
                 0
             };
 
-            atexit::_run_exitfuncs(vm);
+            // atexit::_run_exitfuncs(vm);
 
             vm.state.finalizing.store(true, Ordering::Release);
 
@@ -156,14 +156,14 @@ mod tests {
         })
     }
 
-    #[test]
-    fn test_multiply_str() {
-        Interpreter::without_stdlib(Default::default()).enter(|vm| {
-            let a = vm.new_pyobj(crate::common::ascii!("Hello "));
-            let b = vm.new_pyobj(4_i32);
-            let res = vm._mul(&a, &b).unwrap();
-            let value = res.payload::<PyStr>().unwrap();
-            assert_eq!(value.as_ref(), "Hello Hello Hello Hello ")
-        })
-    }
+    // #[test]
+    // fn test_multiply_str() {
+    //     Interpreter::without_stdlib(Default::default()).enter(|vm| {
+    //         let a = vm.new_pyobj(crate::common::ascii!("Hello "));
+    //         let b = vm.new_pyobj(4_i32);
+    //         let res = vm._mul(&a, &b).unwrap();
+    //         let value = res.payload::<PyStr>().unwrap();
+    //         assert_eq!(value.as_ref(), "Hello Hello Hello Hello ")
+    //     })
+    // }
 }

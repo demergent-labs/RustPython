@@ -15,7 +15,7 @@ mod sys {
         convert::ToPyObject,
         frame::FrameRef,
         function::{FuncArgs, OptionalArg, PosArgs},
-        stdlib::{builtins, warnings::warn},
+        stdlib::builtins,
         types::PyStructSequence,
         version,
         vm::{Settings, VirtualMachine},
@@ -362,16 +362,7 @@ mod sys {
             return Ok(vm.ctx.none());
         };
 
-        let print_unimportable_module_warn = || {
-            warn(
-                vm.ctx.exceptions.runtime_warning,
-                format!("Ignoring unimportable $PYTHONBREAKPOINT: \"{env_var}\"",),
-                0,
-                vm,
-            )
-            .unwrap();
-            Ok(vm.ctx.none())
-        };
+        let print_unimportable_module_warn = || Ok(vm.ctx.none());
 
         let last = match env_var.rsplit_once('.') {
             Some((_, last)) => last,

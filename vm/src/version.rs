@@ -1,7 +1,7 @@
 /* Several function to retrieve version information.
  */
 
-use chrono::{prelude::DateTime, Local};
+// use chrono::{prelude::DateTime, Local};
 use std::time::{Duration, UNIX_EPOCH};
 
 // = 3.12.0alpha
@@ -82,27 +82,32 @@ pub fn get_git_identifier() -> String {
     }
 }
 
-fn get_git_timestamp_datetime() -> DateTime<Local> {
-    let timestamp = option_env!("RUSTPYTHON_GIT_TIMESTAMP")
-        .unwrap_or("")
-        .to_owned();
-    let timestamp = timestamp.parse::<u64>().unwrap_or(0);
+fn get_git_timestamp_datetime() {
+    // let timestamp = option_env!("RUSTPYTHON_GIT_TIMESTAMP")
+    //     .unwrap_or("")
+    //     .to_owned();
+    // let timestamp = timestamp.parse::<u64>().unwrap_or(0);
 
-    let datetime = UNIX_EPOCH + Duration::from_secs(timestamp);
+    // let datetime = UNIX_EPOCH + Duration::from_secs(timestamp);
 
-    datetime.into()
+    // datetime.into()
+    panic!("Not supported in NEAR");
 }
 
 pub fn get_git_date() -> String {
-    let datetime = get_git_timestamp_datetime();
+    // let datetime = get_git_timestamp_datetime();
 
-    datetime.format("%b %e %Y").to_string()
+    // datetime.format("%b %e %Y").to_string()
+
+    panic!("Not supported in NEAR");
 }
 
 pub fn get_git_time() -> String {
-    let datetime = get_git_timestamp_datetime();
+    // let datetime = get_git_timestamp_datetime();
 
-    datetime.format("%H:%M:%S").to_string()
+    // datetime.format("%H:%M:%S").to_string()
+
+    panic!("Not supported in NEAR");
 }
 
 pub fn get_git_datetime() -> String {

@@ -4,7 +4,6 @@ use crate::{
     function::IntoFuncArgs,
     identifier,
     object::{AsObject, PyObject, PyObjectRef, PyResult},
-    stdlib::sys,
     vm::VirtualMachine,
 };
 
@@ -54,13 +53,14 @@ impl VirtualMachine {
     }
 
     pub(crate) fn flush_std(&self) {
-        let vm = self;
-        if let Ok(stdout) = sys::get_stdout(vm) {
-            let _ = vm.call_method(&stdout, identifier!(vm, flush).as_str(), ());
-        }
-        if let Ok(stderr) = sys::get_stderr(vm) {
-            let _ = vm.call_method(&stderr, identifier!(vm, flush).as_str(), ());
-        }
+        // let vm = self;
+        // if let Ok(stdout) = sys::get_stdout(vm) {
+        //     let _ = vm.call_method(&stdout, identifier!(vm, flush).as_str(), ());
+        // }
+        // if let Ok(stderr) = sys::get_stderr(vm) {
+        //     let _ = vm.call_method(&stderr, identifier!(vm, flush).as_str(), ());
+        // }
+        panic!("Not supported in NEAR");
     }
 
     #[track_caller]

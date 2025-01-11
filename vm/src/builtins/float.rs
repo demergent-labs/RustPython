@@ -21,7 +21,7 @@ use malachite_bigint::{BigInt, ToBigInt};
 use num_complex::Complex64;
 use num_traits::{Signed, ToPrimitive, Zero};
 use rustpython_common::int::float_to_ratio;
-use rustpython_format::FormatSpec;
+// use rustpython_format::FormatSpec;
 
 #[pyclass(module = false, name = "float")]
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -160,29 +160,30 @@ impl Constructor for PyFloat {
 }
 
 fn float_from_string(val: PyObjectRef, vm: &VirtualMachine) -> PyResult<f64> {
-    let (bytearray, buffer, buffer_lock);
-    let b = if let Some(s) = val.payload_if_subclass::<PyStr>(vm) {
-        s.as_str().trim().as_bytes()
-    } else if let Some(bytes) = val.payload_if_subclass::<PyBytes>(vm) {
-        bytes.as_bytes()
-    } else if let Some(buf) = val.payload_if_subclass::<PyByteArray>(vm) {
-        bytearray = buf.borrow_buf();
-        &*bytearray
-    } else if let Ok(b) = ArgBytesLike::try_from_borrowed_object(vm, &val) {
-        buffer = b;
-        buffer_lock = buffer.borrow_buf();
-        &*buffer_lock
-    } else {
-        return Err(vm.new_type_error(format!(
-            "float() argument must be a string or a number, not '{}'",
-            val.class().name()
-        )));
-    };
-    crate::literal::float::parse_bytes(b).ok_or_else(|| {
-        val.repr(vm)
-            .map(|repr| vm.new_value_error(format!("could not convert string to float: {repr}")))
-            .unwrap_or_else(|e| e)
-    })
+    panic!("Not supported in NEAR");
+    // let (bytearray, buffer, buffer_lock);
+    // let b = if let Some(s) = val.payload_if_subclass::<PyStr>(vm) {
+    //     s.as_str().trim().as_bytes()
+    // } else if let Some(bytes) = val.payload_if_subclass::<PyBytes>(vm) {
+    //     bytes.as_bytes()
+    // } else if let Some(buf) = val.payload_if_subclass::<PyByteArray>(vm) {
+    //     bytearray = buf.borrow_buf();
+    //     &*bytearray
+    // } else if let Ok(b) = ArgBytesLike::try_from_borrowed_object(vm, &val) {
+    //     buffer = b;
+    //     buffer_lock = buffer.borrow_buf();
+    //     &*buffer_lock
+    // } else {
+    //     return Err(vm.new_type_error(format!(
+    //         "float() argument must be a string or a number, not '{}'",
+    //         val.class().name()
+    //     )));
+    // };
+    // crate::literal::float::parse_bytes(b).ok_or_else(|| {
+    //     val.repr(vm)
+    //         .map(|repr| vm.new_value_error(format!("could not convert string to float: {repr}")))
+    //         .unwrap_or_else(|e| e)
+    // })
 }
 
 #[pyclass(
@@ -192,9 +193,10 @@ fn float_from_string(val: PyObjectRef, vm: &VirtualMachine) -> PyResult<f64> {
 impl PyFloat {
     #[pymethod(magic)]
     fn format(&self, spec: PyStrRef, vm: &VirtualMachine) -> PyResult<String> {
-        FormatSpec::parse(spec.as_str())
-            .and_then(|format_spec| format_spec.format_float(self.value))
-            .map_err(|err| err.into_pyexception(vm))
+        // FormatSpec::parse(spec.as_str())
+        //     .and_then(|format_spec| format_spec.format_float(self.value))
+        //     .map_err(|err| err.into_pyexception(vm))
+        panic!("Not supported in NEAR");
     }
 
     #[pystaticmethod(magic)]
@@ -452,7 +454,8 @@ impl PyFloat {
 
     #[pymethod]
     fn is_integer(&self) -> bool {
-        crate::literal::float::is_integer(self.value)
+        // crate::literal::float::is_integer(self.value)
+        panic!("Not supported in NEAR");
     }
 
     #[pymethod]
@@ -474,15 +477,17 @@ impl PyFloat {
 
     #[pyclassmethod]
     fn fromhex(cls: PyTypeRef, string: PyStrRef, vm: &VirtualMachine) -> PyResult {
-        let result = crate::literal::float::from_hex(string.as_str().trim()).ok_or_else(|| {
-            vm.new_value_error("invalid hexadecimal floating-point string".to_owned())
-        })?;
-        PyType::call(&cls, vec![vm.ctx.new_float(result).into()].into(), vm)
+        // let result = crate::literal::float::from_hex(string.as_str().trim()).ok_or_else(|| {
+        //     vm.new_value_error("invalid hexadecimal floating-point string".to_owned())
+        // })?;
+        // PyType::call(&cls, vec![vm.ctx.new_float(result).into()].into(), vm)
+        panic!("Not supported in NEAR");
     }
 
     #[pymethod]
     fn hex(&self) -> String {
-        crate::literal::float::to_hex(self.value)
+        // crate::literal::float::to_hex(self.value)
+        panic!("Not supported in NEAR");
     }
 
     #[pymethod(magic)]
@@ -587,7 +592,8 @@ impl AsNumber for PyFloat {
 impl Representable for PyFloat {
     #[inline]
     fn repr_str(zelf: &Py<Self>, _vm: &VirtualMachine) -> PyResult<String> {
-        Ok(crate::literal::float::to_string(zelf.value))
+        // Ok(crate::literal::float::to_string(zelf.value))
+        panic!("Not supported in NEAR");
     }
 }
 

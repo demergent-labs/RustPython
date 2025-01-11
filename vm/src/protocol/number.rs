@@ -7,7 +7,6 @@ use crate::{
     common::int::bytes_to_int,
     function::ArgBytesLike,
     object::{Traverse, TraverseFn},
-    stdlib::warnings,
     AsObject, PyObject, PyObjectRef, PyPayload, PyRef, PyResult, TryFromBorrowedObject,
     VirtualMachine,
 };
@@ -63,12 +62,6 @@ impl PyObject {
         } else if let Some(i) = self.to_number().int(vm).or_else(|| self.try_index_opt(vm)) {
             i
         } else if let Ok(Some(f)) = vm.get_special_method(self, identifier!(vm, __trunc__)) {
-            warnings::warn(
-                vm.ctx.exceptions.deprecation_warning,
-                "The delegation of int() to __trunc__ is deprecated.".to_owned(),
-                1,
-                vm,
-            )?;
             let ret = f.invoke((), vm)?;
             ret.try_index(vm).map_err(|_| {
                 vm.new_type_error(format!(
@@ -472,18 +465,6 @@ impl PyNumber<'_> {
 
             let ret_class = ret.class().to_owned();
             if let Some(ret) = ret.downcast_ref::<PyInt>() {
-                warnings::warn(
-                    vm.ctx.exceptions.deprecation_warning,
-                    format!(
-                        "__int__ returned non-int (type {}).  \
-                    The ability to return an instance of a strict subclass of int \
-                    is deprecated, and may be removed in a future version of Python.",
-                        ret_class
-                    ),
-                    1,
-                    vm,
-                )?;
-
                 Ok(ret.to_owned())
             } else {
                 Err(vm.new_type_error(format!(
@@ -506,18 +487,6 @@ impl PyNumber<'_> {
 
             let ret_class = ret.class().to_owned();
             if let Some(ret) = ret.downcast_ref::<PyInt>() {
-                warnings::warn(
-                    vm.ctx.exceptions.deprecation_warning,
-                    format!(
-                        "__index__ returned non-int (type {}).  \
-                    The ability to return an instance of a strict subclass of int \
-                    is deprecated, and may be removed in a future version of Python.",
-                        ret_class
-                    ),
-                    1,
-                    vm,
-                )?;
-
                 Ok(ret.to_owned())
             } else {
                 Err(vm.new_type_error(format!(
@@ -540,18 +509,6 @@ impl PyNumber<'_> {
 
             let ret_class = ret.class().to_owned();
             if let Some(ret) = ret.downcast_ref::<PyFloat>() {
-                warnings::warn(
-                    vm.ctx.exceptions.deprecation_warning,
-                    format!(
-                        "__float__ returned non-float (type {}).  \
-                    The ability to return an instance of a strict subclass of float \
-                    is deprecated, and may be removed in a future version of Python.",
-                        ret_class
-                    ),
-                    1,
-                    vm,
-                )?;
-
                 Ok(ret.to_owned())
             } else {
                 Err(vm.new_type_error(format!(

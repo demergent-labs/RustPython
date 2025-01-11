@@ -23,94 +23,111 @@ ast = ["rustpython-ast"]
 codegen = ["rustpython-codegen", "ast"]
 parser = ["rustpython-parser", "ast"]
 serde = ["dep:serde"]
-wasmbind = ["chrono/wasmbind", "getrandom/js", "wasm-bindgen"]
+wasmbind = ["getrandom/js", "wasm-bindgen"]
 
 [dependencies]
-rustpython-compiler = { workspace = true, optional = true }
-rustpython-codegen = { workspace = true, optional = true }
-rustpython-common = { workspace = true }
-rustpython-derive = { workspace = true }
-rustpython-jit = { workspace = true, optional = true }
+rustpython-compiler = { workspace = true, optional = true, default-features = false, features = [
+] }
+rustpython-codegen = { workspace = true, optional = true, default-features = false, features = [
+] }
+rustpython-common = { workspace = true, default-features = false, features = [
+] }
+rustpython-derive = { workspace = true, default-features = false, features = [
+] }
+rustpython-jit = { workspace = true, optional = true, default-features = false, features = [
+] }
 
-rustpython-ast = { workspace = true, optional = true }
-rustpython-parser = { workspace = true, optional = true }
-rustpython-compiler-core = { workspace = true }
-rustpython-parser-core = { workspace = true }
-rustpython-literal = { workspace = true }
-rustpython-format = { workspace = true }
-rustpython-sre_engine = { workspace = true }
+rustpython-ast = { workspace = true, optional = true, default-features = false, features = [
+] }
+rustpython-parser = { workspace = true, optional = true, default-features = false, features = [
+] }
+rustpython-compiler-core = { workspace = true, default-features = false, features = [
+] }
+rustpython-parser-core = { workspace = true, default-features = false, features = [
+] }
+# rustpython-literal = { workspace = true, default-features = false, features = [
+# ] }
+# rustpython-format = { workspace = true, default-features = false, features = [
+# ] }
+# rustpython-sre_engine = { workspace = true, default-features = false, features = [
+# ] }
 
-ascii = { workspace = true }
-ahash = { workspace = true }
-bitflags = { workspace = true }
-bstr = { workspace = true }
-cfg-if = { workspace = true }
-crossbeam-utils = { workspace = true }
-chrono = { workspace = true, features = ["wasmbind"] }
-flame = { workspace = true, optional = true }
-getrandom = { workspace = true }
-hex = { workspace = true }
-indexmap = { workspace = true }
-itertools = { workspace = true }
-is-macro = { workspace = true }
-libc = { workspace = true }
-log = { workspace = true }
-nix = { workspace = true }
-malachite-bigint = { workspace = true }
-num-complex = { workspace = true }
-num-integer = { workspace = true }
-num-traits = { workspace = true }
-num_enum = { workspace = true }
-once_cell = { workspace = true }
-parking_lot = { workspace = true }
-paste = { workspace = true }
-rand = { workspace = true }
-serde = { workspace = true, optional = true }
-static_assertions = { workspace = true }
-strum = { workspace = true }
-strum_macros = { workspace = true }
-thiserror = { workspace = true }
-thread_local = { workspace = true }
-memchr = { workspace = true }
+# ascii = { workspace = true, default-features = false, features = [] }
+ahash = { workspace = true, default-features = false, features = [] }
+bitflags = { workspace = true, default-features = false, features = [] }
+bstr = { workspace = true, default-features = false, features = [] }
+cfg-if = { workspace = true, default-features = false, features = [] }
+crossbeam-utils = { workspace = true, default-features = false, features = [] }
+# chrono = { workspace = true, default-features = false, features = [] }
+flame = { workspace = true, optional = true, default-features = false, features = [
+] }
+getrandom = { workspace = true, default-features = false, features = [] }
+hex = { workspace = true, default-features = false, features = [] }
+indexmap = { workspace = true, default-features = false, features = [] }
+itertools = { workspace = true, default-features = false, features = [] }
+is-macro = { workspace = true, default-features = false, features = [] }
+libc = { workspace = true, default-features = false, features = [] }
+log = { workspace = true, default-features = false, features = [] }
+nix = { workspace = true, default-features = false, features = [] }
+malachite-bigint = { workspace = true, default-features = false, features = [] }
+num-complex = { workspace = true, default-features = false, features = [] }
+num-integer = { workspace = true, default-features = false, features = [] }
+num-traits = { workspace = true, default-features = false, features = [] }
+num_enum = { workspace = true, default-features = false, features = [] }
+once_cell = { workspace = true, default-features = false, features = [] }
+parking_lot = { workspace = true, default-features = false, features = [] }
+paste = { workspace = true, default-features = false, features = [] }
+rand = { workspace = true, default-features = false, features = [] }
+serde = { workspace = true, optional = true, default-features = false, features = [
+] }
+static_assertions = { workspace = true, default-features = false, features = [
+] }
+strum = { workspace = true, default-features = false, features = [] }
+strum_macros = { workspace = true, default-features = false, features = [] }
+thiserror = { workspace = true, default-features = false, features = [] }
+thread_local = { workspace = true, default-features = false, features = [] }
+memchr = { workspace = true, default-features = false, features = [] }
 
-caseless = "0.2.2"
-flamer = { version = "0.4", optional = true }
-half = "2"
-memoffset = "0.9.1"
-optional = "0.5.0"
-result-like = "0.5.0"
-timsort = "0.1.2"
+caseless = { version = "0.2.2", default-features = false, features = [] }
+flamer = { version = "0.4", optional = true, default-features = false, features = [
+] }
+half = { version = "2", default-features = false, features = [] }
+memoffset = { version = "0.9.1", default-features = false, features = [] }
+optional = { version = "0.5.0", default-features = false, features = [] }
+result-like = { version = "0.5.0", default-features = false, features = [] }
+timsort = { version = "0.1.2", default-features = false, features = [] }
 
 ## unicode stuff
-unicode_names2 = { workspace = true }
-# TODO: use unic for this; needed for title case:
-# https://github.com/RustPython/RustPython/pull/832#discussion_r275428939
-unicode-casing = "0.1.0"
-# update version all at the same time
-unic-ucd-bidi      = "0.9.0"
-unic-ucd-category  = "0.9.0"
-unic-ucd-ident     = "0.9.0"
+unicode_names2 = { workspace = true, default-features = false, features = [] }
+unicode-casing = { version = "0.1.0", default-features = false, features = [] }
+unic-ucd-bidi = { version = "0.9.0", default-features = false, features = [] }
+unic-ucd-category = { version = "0.9.0", default-features = false, features = [
+] }
+unic-ucd-ident = { version = "0.9.0", default-features = false, features = [
+  "xid",
+] }
 
 [target.'cfg(unix)'.dependencies]
-rustix = { workspace = true }
-exitcode = "1.1.2"
-uname = "0.1.1"
+rustix = { workspace = true, default-features = false, features = [] }
+exitcode = { version = "1.1.2", default-features = false, features = [] }
+uname = { version = "0.1.1", default-features = false, features = [] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-rustyline = { workspace = true }
-which = "6"
+rustyline = { workspace = true, default-features = false, features = [] }
+which = { version = "6", default-features = false, features = [] }
 
 [target.'cfg(any(not(target_arch = "wasm32"), target_os = "wasi"))'.dependencies]
-num_cpus = "1.13.1"
+num_cpus = { version = "1.13.1", default-features = false, features = [] }
 
 [target.'cfg(windows)'.dependencies]
-junction = { workspace = true }
-schannel = { workspace = true }
-widestring = { workspace = true }
-winreg = "0.52"
+junction = { workspace = true, default-features = false, features = [] }
+schannel = { workspace = true, default-features = false, features = [] }
+widestring = { workspace = true, default-features = false, features = [] }
+winreg = { version = "0.52", default-features = false, features = [] }
 
 [target.'cfg(windows)'.dependencies.windows]
 version = "0.52.0"
+default-features = false
 features = [
   "Win32_Foundation",
   "Win32_System_LibraryLoader",
@@ -120,6 +137,7 @@ features = [
 
 [target.'cfg(windows)'.dependencies.windows-sys]
 workspace = true
+default-features = false
 features = [
   "Win32_Foundation",
   "Win32_Networking_WinSock",
@@ -142,13 +160,16 @@ features = [
 ]
 
 [target.'cfg(all(target_arch = "wasm32", target_os = "unknown"))'.dependencies]
-wasm-bindgen = { workspace = true, optional = true }
-getrandom = { workspace = true, features = ["custom"] }
+wasm-bindgen = { workspace = true, optional = true, default-features = false, features = [
+] }
+getrandom = { workspace = true, default-features = false, features = [
+  "custom",
+] }
 
 [build-dependencies]
-glob = { workspace = true }
-itertools = { workspace = true }
-rustc_version = "0.4.0"
+glob = { workspace = true, default-features = false, features = [] }
+itertools = { workspace = true, default-features = false, features = [] }
+rustc_version = { version = "0.4.0", default-features = false, features = [] }
 
 [lints]
 workspace = true

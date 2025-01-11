@@ -3,7 +3,7 @@
 //! Implements the list of [builtin Python functions](https://docs.python.org/3/library/builtins.html).
 use crate::{builtins::PyModule, class::PyClassImpl, Py, VirtualMachine};
 pub(crate) use builtins::{__module_def, DOC};
-pub use builtins::{ascii, print, reversed};
+pub use builtins::{print, reversed};
 
 #[pymodule]
 mod builtins {
@@ -27,7 +27,6 @@ mod builtins {
         protocol::{PyIter, PyIterReturn},
         py_io,
         readline::{Readline, ReadlineResult},
-        stdlib::sys,
         types::PyComparisonOp,
         AsObject, PyObjectRef, PyPayload, PyRef, PyResult, TryFromObject, VirtualMachine,
     };
@@ -62,12 +61,12 @@ mod builtins {
         Ok(false)
     }
 
-    #[pyfunction]
-    pub fn ascii(obj: PyObjectRef, vm: &VirtualMachine) -> PyResult<ascii::AsciiString> {
-        let repr = obj.repr(vm)?;
-        let ascii = to_ascii(repr.as_str());
-        Ok(ascii)
-    }
+    // #[pyfunction]
+    // pub fn ascii(obj: PyObjectRef, vm: &VirtualMachine) -> PyResult<ascii::AsciiString> {
+    //     let repr = obj.repr(vm)?;
+    //     let ascii = to_ascii(repr.as_str());
+    //     Ok(ascii)
+    // }
 
     #[pyfunction]
     fn bin(x: PyIntRef) -> String {
@@ -420,41 +419,42 @@ mod builtins {
 
     #[pyfunction]
     fn input(prompt: OptionalArg<PyStrRef>, vm: &VirtualMachine) -> PyResult {
-        let stdin = sys::get_stdin(vm)?;
-        let stdout = sys::get_stdout(vm)?;
-        let stderr = sys::get_stderr(vm)?;
+        panic!("Not supported in NEAR");
+        // let stdin = sys::get_stdin(vm)?;
+        // let stdout = sys::get_stdout(vm)?;
+        // let stderr = sys::get_stderr(vm)?;
 
-        let _ = vm.call_method(&stderr, "flush", ());
+        // let _ = vm.call_method(&stderr, "flush", ());
 
-        let fd_matches = |obj, expected| {
-            vm.call_method(obj, "fileno", ())
-                .and_then(|o| i64::try_from_object(vm, o))
-                .ok()
-                .map_or(false, |fd| fd == expected)
-        };
+        // let fd_matches = |obj, expected| {
+        //     vm.call_method(obj, "fileno", ())
+        //         .and_then(|o| i64::try_from_object(vm, o))
+        //         .ok()
+        //         .map_or(false, |fd| fd == expected)
+        // };
 
-        // everything is normalish, we can just rely on rustyline to use stdin/stdout
-        if fd_matches(&stdin, 0) && fd_matches(&stdout, 1) && std::io::stdin().is_terminal() {
-            let prompt = prompt.as_ref().map_or("", |s| s.as_str());
-            let mut readline = Readline::new(());
-            match readline.readline(prompt) {
-                ReadlineResult::Line(s) => Ok(vm.ctx.new_str(s).into()),
-                ReadlineResult::Eof => {
-                    Err(vm.new_exception_empty(vm.ctx.exceptions.eof_error.to_owned()))
-                }
-                ReadlineResult::Interrupt => {
-                    Err(vm.new_exception_empty(vm.ctx.exceptions.keyboard_interrupt.to_owned()))
-                }
-                ReadlineResult::Io(e) => Err(vm.new_os_error(e.to_string())),
-                ReadlineResult::Other(e) => Err(vm.new_runtime_error(e.to_string())),
-            }
-        } else {
-            if let OptionalArg::Present(prompt) = prompt {
-                vm.call_method(&stdout, "write", (prompt,))?;
-            }
-            let _ = vm.call_method(&stdout, "flush", ());
-            py_io::file_readline(&stdin, None, vm)
-        }
+        // // everything is normalish, we can just rely on rustyline to use stdin/stdout
+        // if fd_matches(&stdin, 0) && fd_matches(&stdout, 1) && std::io::stdin().is_terminal() {
+        //     let prompt = prompt.as_ref().map_or("", |s| s.as_str());
+        //     let mut readline = Readline::new(());
+        //     match readline.readline(prompt) {
+        //         ReadlineResult::Line(s) => Ok(vm.ctx.new_str(s).into()),
+        //         ReadlineResult::Eof => {
+        //             Err(vm.new_exception_empty(vm.ctx.exceptions.eof_error.to_owned()))
+        //         }
+        //         ReadlineResult::Interrupt => {
+        //             Err(vm.new_exception_empty(vm.ctx.exceptions.keyboard_interrupt.to_owned()))
+        //         }
+        //         ReadlineResult::Io(e) => Err(vm.new_os_error(e.to_string())),
+        //         ReadlineResult::Other(e) => Err(vm.new_runtime_error(e.to_string())),
+        //     }
+        // } else {
+        //     if let OptionalArg::Present(prompt) = prompt {
+        //         vm.call_method(&stdout, "write", (prompt,))?;
+        //     }
+        //     let _ = vm.call_method(&stdout, "flush", ());
+        //     py_io::file_readline(&stdin, None, vm)
+        // }
     }
 
     #[pyfunction]
@@ -674,7 +674,7 @@ mod builtins {
     pub fn print(objects: PosArgs, options: PrintOptions, vm: &VirtualMachine) -> PyResult<()> {
         let file = match options.file {
             Some(f) => f,
-            None => sys::get_stdout(vm)?,
+            None => panic!("Not supported in NEAR"),
         };
         let write = |obj: PyStrRef| vm.call_method(&file, "write", (obj,));
 

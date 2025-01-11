@@ -5,15 +5,21 @@ use crate::{
         PyStrRef, PyTypeRef,
     },
     byte::bytes_from_object,
-    cformat::cformat_bytes,
+    // cformat::cformat_bytes,
     common::hash,
     function::{ArgIterable, Either, OptionalArg, OptionalOption, PyComparisonValue},
     identifier,
-    literal::escape::Escape,
+    // literal::escape::Escape,
     protocol::PyBuffer,
     sequence::{SequenceExt, SequenceMutExt},
     types::PyComparisonOp,
-    AsObject, PyObject, PyObjectRef, PyPayload, PyResult, TryFromBorrowedObject, VirtualMachine,
+    AsObject,
+    PyObject,
+    PyObjectRef,
+    PyPayload,
+    PyResult,
+    TryFromBorrowedObject,
+    VirtualMachine,
 };
 use bstr::ByteSlice;
 use itertools::Itertools;
@@ -253,32 +259,34 @@ impl PyBytesInner {
     }
 
     pub fn repr_with_name(&self, class_name: &str, vm: &VirtualMachine) -> PyResult<String> {
-        const DECORATION_LEN: isize = 2 + 3; // 2 for (), 3 for b"" => bytearray(b"")
-        let escape = crate::literal::escape::AsciiEscape::new_repr(&self.elements);
-        let len = escape
-            .layout()
-            .len
-            .and_then(|len| (len as isize).checked_add(DECORATION_LEN + class_name.len() as isize))
-            .ok_or_else(|| Self::new_repr_overflow_error(vm))? as usize;
-        let mut buf = String::with_capacity(len);
-        buf.push_str(class_name);
-        buf.push('(');
-        escape.bytes_repr().write(&mut buf).unwrap();
-        buf.push(')');
-        debug_assert_eq!(buf.len(), len);
-        Ok(buf)
+        // const DECORATION_LEN: isize = 2 + 3; // 2 for (), 3 for b"" => bytearray(b"")
+        // let escape = crate::literal::escape::AsciiEscape::new_repr(&self.elements);
+        // let len = escape
+        //     .layout()
+        //     .len
+        //     .and_then(|len| (len as isize).checked_add(DECORATION_LEN + class_name.len() as isize))
+        //     .ok_or_else(|| Self::new_repr_overflow_error(vm))? as usize;
+        // let mut buf = String::with_capacity(len);
+        // buf.push_str(class_name);
+        // buf.push('(');
+        // escape.bytes_repr().write(&mut buf).unwrap();
+        // buf.push(')');
+        // debug_assert_eq!(buf.len(), len);
+        // Ok(buf)
+        panic!("Not supported in NEAR");
     }
 
     pub fn repr_bytes(&self, vm: &VirtualMachine) -> PyResult<String> {
-        let escape = crate::literal::escape::AsciiEscape::new_repr(&self.elements);
-        let len = 3 + escape
-            .layout()
-            .len
-            .ok_or_else(|| Self::new_repr_overflow_error(vm))?;
-        let mut buf = String::with_capacity(len);
-        escape.bytes_repr().write(&mut buf).unwrap();
-        debug_assert_eq!(buf.len(), len);
-        Ok(buf)
+        // let escape = crate::literal::escape::AsciiEscape::new_repr(&self.elements);
+        // let len = 3 + escape
+        //     .layout()
+        //     .len
+        //     .ok_or_else(|| Self::new_repr_overflow_error(vm))?;
+        // let mut buf = String::with_capacity(len);
+        // escape.bytes_repr().write(&mut buf).unwrap();
+        // debug_assert_eq!(buf.len(), len);
+        // Ok(buf)
+        panic!("Not supported in NEAR");
     }
 
     #[inline]
@@ -939,7 +947,8 @@ impl PyBytesInner {
     }
 
     pub fn cformat(&self, values: PyObjectRef, vm: &VirtualMachine) -> PyResult<Vec<u8>> {
-        cformat_bytes(vm, self.elements.as_slice(), values)
+        // cformat_bytes(vm, self.elements.as_slice(), values)
+        panic!("Not supported in NEAR");
     }
 
     pub fn mul(&self, n: isize, vm: &VirtualMachine) -> PyResult<Vec<u8>> {
@@ -1125,13 +1134,14 @@ pub fn bytes_decode(
     args: DecodeArgs,
     vm: &VirtualMachine,
 ) -> PyResult<PyStrRef> {
-    let DecodeArgs { encoding, errors } = args;
-    let encoding = encoding
-        .as_ref()
-        .map_or(crate::codecs::DEFAULT_ENCODING, |s| s.as_str());
-    vm.state
-        .codec_registry
-        .decode_text(zelf, encoding, errors, vm)
+    // let DecodeArgs { encoding, errors } = args;
+    // let encoding = encoding
+    //     .as_ref()
+    //     .map_or(crate::codecs::DEFAULT_ENCODING, |s| s.as_str());
+    // vm.state
+    //     .codec_registry
+    //     .decode_text(zelf, encoding, errors, vm)
+    panic!("Not supported in NEAR");
 }
 
 fn hex_impl_no_sep(bytes: &[u8]) -> String {

@@ -356,7 +356,7 @@ impl PySetInner {
         if let Some((key, _)) = self.content.pop_back() {
             Ok(key)
         } else {
-            let err_msg = vm.ctx.new_str(ascii!("pop from an empty set")).into();
+            let err_msg = vm.ctx.new_str("pop from an empty set").into();
             Err(vm.new_key_error(err_msg))
         }
     }

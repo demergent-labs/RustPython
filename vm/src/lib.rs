@@ -44,9 +44,9 @@ pub mod buffer;
 pub mod builtins;
 pub mod byte;
 mod bytesinner;
-pub mod cformat;
+// pub mod cformat;
 pub mod class;
-mod codecs;
+// mod codecs;
 pub mod compiler;
 pub mod convert;
 mod coroutine;
@@ -54,7 +54,7 @@ mod dictdatatype;
 #[cfg(feature = "rustpython-compiler")]
 pub mod eval;
 pub mod exceptions;
-pub mod format;
+// pub mod format;
 pub mod frame;
 pub mod function;
 pub mod import;
@@ -80,7 +80,7 @@ pub mod types;
 pub mod utils;
 pub mod version;
 pub mod vm;
-pub mod warn;
+// pub mod warn;
 #[cfg(windows)]
 pub mod windows;
 
@@ -94,7 +94,7 @@ pub use self::vm::{Context, Interpreter, Settings, VirtualMachine};
 
 pub use rustpython_common as common;
 pub use rustpython_compiler_core::{bytecode, frozen};
-pub use rustpython_literal as literal;
+// pub use rustpython_literal as literal;
 
 #[doc(hidden)]
 pub mod __exports {

@@ -2,8 +2,8 @@
 mod jitfunc;
 
 use super::{
-    tuple::PyTupleTyped, PyAsyncGen, PyCode, PyCoroutine, PyDictRef, PyGenerator, PyStr, PyStrRef,
-    PyTupleRef, PyType, PyTypeRef,
+    tuple::PyTupleTyped, PyCode, PyCoroutine, PyDictRef, PyGenerator, PyStr, PyStrRef, PyTupleRef,
+    PyType, PyTypeRef,
 };
 #[cfg(feature = "jit")]
 use crate::common::lock::OnceCell;
@@ -344,7 +344,7 @@ impl PyFunction {
         match (is_gen, is_coro) {
             (true, false) => Ok(PyGenerator::new(frame, self.name()).into_pyobject(vm)),
             (false, true) => Ok(PyCoroutine::new(frame, self.name()).into_pyobject(vm)),
-            (true, true) => Ok(PyAsyncGen::new(frame, self.name()).into_pyobject(vm)),
+            (true, true) => panic!("Not supported in NEAR"),
             (false, false) => vm.run_frame(frame),
         }
     }

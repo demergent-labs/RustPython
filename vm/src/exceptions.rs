@@ -9,10 +9,18 @@ use crate::{
     convert::{ToPyException, ToPyObject},
     function::{ArgIterable, FuncArgs, IntoFuncArgs},
     py_io::{self, Write},
-    stdlib::sys,
+    // stdlib::sys,
     suggestion::offer_suggestions,
     types::{Callable, Constructor, Initializer, Representable},
-    AsObject, Context, Py, PyObjectRef, PyPayload, PyRef, PyResult, TryFromObject, VirtualMachine,
+    AsObject,
+    Context,
+    Py,
+    PyObjectRef,
+    PyPayload,
+    PyRef,
+    PyResult,
+    TryFromObject,
+    VirtualMachine,
 };
 use crossbeam_utils::atomic::AtomicCell;
 use itertools::Itertools;
@@ -51,11 +59,11 @@ impl VirtualMachine {
     pub fn print_exception(&self, exc: PyBaseExceptionRef) {
         let vm = self;
         let write_fallback = |exc, errstr| {
-            if let Ok(stderr) = sys::get_stderr(vm) {
-                let mut stderr = py_io::PyWriter(stderr, vm);
+            if false {
+                // let mut stderr = py_io::PyWriter(stderr, vm);
                 // if this fails stderr might be closed -- ignore it
-                let _ = writeln!(stderr, "{errstr}");
-                let _ = self.write_exception(&mut stderr, exc);
+                // let _ = writeln!(stderr, "{errstr}");
+                // let _ = self.write_exception(&mut stderr, exc);
             } else {
                 eprintln!("{errstr}\nlost sys.stderr");
                 let _ = self.write_exception(&mut py_io::IoWriter(io::stderr()), exc);
@@ -1139,29 +1147,29 @@ impl<C> ToPyException for widestring::error::ContainsNul<C> {
 
 #[cfg(any(unix, windows, target_os = "wasi"))]
 pub(crate) fn errno_to_exc_type(errno: i32, vm: &VirtualMachine) -> Option<&'static Py<PyType>> {
-    use crate::stdlib::errno::errors;
-    let excs = &vm.ctx.exceptions;
+    // use crate::stdlib::errno::errors;
+    // let excs = &vm.ctx.exceptions;
     match errno {
-        #[allow(unreachable_patterns)] // EAGAIN is sometimes the same as EWOULDBLOCK
-        errors::EWOULDBLOCK | errors::EAGAIN => Some(excs.blocking_io_error),
-        errors::EALREADY => Some(excs.blocking_io_error),
-        errors::EINPROGRESS => Some(excs.blocking_io_error),
-        errors::EPIPE => Some(excs.broken_pipe_error),
-        #[cfg(not(target_os = "wasi"))]
-        errors::ESHUTDOWN => Some(excs.broken_pipe_error),
-        errors::ECHILD => Some(excs.child_process_error),
-        errors::ECONNABORTED => Some(excs.connection_aborted_error),
-        errors::ECONNREFUSED => Some(excs.connection_refused_error),
-        errors::ECONNRESET => Some(excs.connection_reset_error),
-        errors::EEXIST => Some(excs.file_exists_error),
-        errors::ENOENT => Some(excs.file_not_found_error),
-        errors::EISDIR => Some(excs.is_a_directory_error),
-        errors::ENOTDIR => Some(excs.not_a_directory_error),
-        errors::EINTR => Some(excs.interrupted_error),
-        errors::EACCES => Some(excs.permission_error),
-        errors::EPERM => Some(excs.permission_error),
-        errors::ESRCH => Some(excs.process_lookup_error),
-        errors::ETIMEDOUT => Some(excs.timeout_error),
+        // #[allow(unreachable_patterns)] // EAGAIN is sometimes the same as EWOULDBLOCK
+        // errors::EWOULDBLOCK | errors::EAGAIN => Some(excs.blocking_io_error),
+        // errors::EALREADY => Some(excs.blocking_io_error),
+        // errors::EINPROGRESS => Some(excs.blocking_io_error),
+        // errors::EPIPE => Some(excs.broken_pipe_error),
+        // #[cfg(not(target_os = "wasi"))]
+        // errors::ESHUTDOWN => Some(excs.broken_pipe_error),
+        // errors::ECHILD => Some(excs.child_process_error),
+        // errors::ECONNABORTED => Some(excs.connection_aborted_error),
+        // errors::ECONNREFUSED => Some(excs.connection_refused_error),
+        // errors::ECONNRESET => Some(excs.connection_reset_error),
+        // errors::EEXIST => Some(excs.file_exists_error),
+        // errors::ENOENT => Some(excs.file_not_found_error),
+        // errors::EISDIR => Some(excs.is_a_directory_error),
+        // errors::ENOTDIR => Some(excs.not_a_directory_error),
+        // errors::EINTR => Some(excs.interrupted_error),
+        // errors::EACCES => Some(excs.permission_error),
+        // errors::EPERM => Some(excs.permission_error),
+        // errors::ESRCH => Some(excs.process_lookup_error),
+        // errors::ETIMEDOUT => Some(excs.timeout_error),
         _ => None,
     }
 }

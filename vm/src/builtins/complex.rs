@@ -9,7 +9,6 @@ use crate::{
     },
     identifier,
     protocol::PyNumberMethods,
-    stdlib::warnings,
     types::{AsNumber, Comparable, Constructor, Hashable, PyComparisonOp, Representable},
     AsObject, Context, Py, PyObject, PyObjectRef, PyPayload, PyRef, PyResult, VirtualMachine,
 };
@@ -63,17 +62,17 @@ impl PyObjectRef {
 
             let ret_class = result.class().to_owned();
             if let Some(ret) = result.downcast_ref::<PyComplex>() {
-                warnings::warn(
-                    vm.ctx.exceptions.deprecation_warning,
-                    format!(
-                        "__complex__ returned non-complex (type {}).  \
-                    The ability to return an instance of a strict subclass of complex \
-                    is deprecated, and may be removed in a future version of Python.",
-                        ret_class
-                    ),
-                    1,
-                    vm,
-                )?;
+                // warnings::warn(
+                //     vm.ctx.exceptions.deprecation_warning,
+                //     format!(
+                //         "__complex__ returned non-complex (type {}).  \
+                //     The ability to return an instance of a strict subclass of complex \
+                //     is deprecated, and may be removed in a future version of Python.",
+                //         ret_class
+                //     ),
+                //     1,
+                //     vm,
+                // )?;
 
                 return Ok(Some((ret.value, true)));
             } else {
@@ -488,40 +487,41 @@ impl AsNumber for PyComplex {
 impl Representable for PyComplex {
     #[inline]
     fn repr_str(zelf: &Py<Self>, _vm: &VirtualMachine) -> PyResult<String> {
-        // TODO: when you fix this, move it to rustpython_common::complex::repr and update
-        //       ast/src/unparse.rs + impl Display for Constant in ast/src/constant.rs
-        let Complex64 { re, im } = zelf.value;
-        // integer => drop ., fractional => float_ops
-        let mut im_part = if im.fract() == 0.0 {
-            im.to_string()
-        } else {
-            crate::literal::float::to_string(im)
-        };
-        im_part.push('j');
+        // // TODO: when you fix this, move it to rustpython_common::complex::repr and update
+        // //       ast/src/unparse.rs + impl Display for Constant in ast/src/constant.rs
+        // let Complex64 { re, im } = zelf.value;
+        // // integer => drop ., fractional => float_ops
+        // let mut im_part = if im.fract() == 0.0 {
+        //     im.to_string()
+        // } else {
+        //     crate::literal::float::to_string(im)
+        // };
+        // im_part.push('j');
 
-        // positive empty => return im_part, integer => drop ., fractional => float_ops
-        let re_part = if re == 0.0 {
-            if re.is_sign_positive() {
-                return Ok(im_part);
-            } else {
-                re.to_string()
-            }
-        } else if re.fract() == 0.0 {
-            re.to_string()
-        } else {
-            crate::literal::float::to_string(re)
-        };
-        let mut result = String::with_capacity(
-            re_part.len() + im_part.len() + 2 + im.is_sign_positive() as usize,
-        );
-        result.push('(');
-        result.push_str(&re_part);
-        if im.is_sign_positive() || im.is_nan() {
-            result.push('+');
-        }
-        result.push_str(&im_part);
-        result.push(')');
-        Ok(result)
+        // // positive empty => return im_part, integer => drop ., fractional => float_ops
+        // let re_part = if re == 0.0 {
+        //     if re.is_sign_positive() {
+        //         return Ok(im_part);
+        //     } else {
+        //         re.to_string()
+        //     }
+        // } else if re.fract() == 0.0 {
+        //     re.to_string()
+        // } else {
+        //     crate::literal::float::to_string(re)
+        // };
+        // let mut result = String::with_capacity(
+        //     re_part.len() + im_part.len() + 2 + im.is_sign_positive() as usize,
+        // );
+        // result.push('(');
+        // result.push_str(&re_part);
+        // if im.is_sign_positive() || im.is_nan() {
+        //     result.push('+');
+        // }
+        // result.push_str(&im_part);
+        // result.push(')');
+        // Ok(result)
+        panic!("Not supported in NEAR");
     }
 }
 
@@ -548,38 +548,39 @@ pub struct ComplexArgs {
 }
 
 fn parse_str(s: &str) -> Option<Complex64> {
-    // Handle parentheses
-    let s = match s.strip_prefix('(') {
-        None => s,
-        Some(s) => match s.strip_suffix(')') {
-            None => return None,
-            Some(s) => s.trim(),
-        },
-    };
+    panic!("Not supported in NEAR");
+    // // Handle parentheses
+    // let s = match s.strip_prefix('(') {
+    //     None => s,
+    //     Some(s) => match s.strip_suffix(')') {
+    //         None => return None,
+    //         Some(s) => s.trim(),
+    //     },
+    // };
 
-    let value = match s.strip_suffix(|c| c == 'j' || c == 'J') {
-        None => Complex64::new(crate::literal::float::parse_str(s)?, 0.0),
-        Some(mut s) => {
-            let mut real = 0.0;
-            // Find the central +/- operator. If it exists, parse the real part.
-            for (i, w) in s.as_bytes().windows(2).enumerate() {
-                if (w[1] == b'+' || w[1] == b'-') && !(w[0] == b'e' || w[0] == b'E') {
-                    real = crate::literal::float::parse_str(&s[..=i])?;
-                    s = &s[i + 1..];
-                    break;
-                }
-            }
+    // let value = match s.strip_suffix(|c| c == 'j' || c == 'J') {
+    //     None => Complex64::new(crate::literal::float::parse_str(s)?, 0.0),
+    //     Some(mut s) => {
+    //         let mut real = 0.0;
+    //         // Find the central +/- operator. If it exists, parse the real part.
+    //         for (i, w) in s.as_bytes().windows(2).enumerate() {
+    //             if (w[1] == b'+' || w[1] == b'-') && !(w[0] == b'e' || w[0] == b'E') {
+    //                 real = crate::literal::float::parse_str(&s[..=i])?;
+    //                 s = &s[i + 1..];
+    //                 break;
+    //             }
+    //         }
 
-            let imag = match s {
-                // "j", "+j"
-                "" | "+" => 1.0,
-                // "-j"
-                "-" => -1.0,
-                s => crate::literal::float::parse_str(s)?,
-            };
+    //         let imag = match s {
+    //             // "j", "+j"
+    //             "" | "+" => 1.0,
+    //             // "-j"
+    //             "-" => -1.0,
+    //             s => crate::literal::float::parse_str(s)?,
+    //         };
 
-            Complex64::new(real, imag)
-        }
-    };
-    Some(value)
+    //         Complex64::new(real, imag)
+    //     }
+    // };
+    // Some(value)
 }

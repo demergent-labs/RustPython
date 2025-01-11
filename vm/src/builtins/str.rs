@@ -9,7 +9,7 @@ use crate::{
     class::PyClassImpl,
     common::str::{BorrowedStr, PyStrKind, PyStrKindData},
     convert::{IntoPyException, ToPyException, ToPyObject, ToPyResult},
-    format::{format, format_map},
+    // format::{format, format_map},
     function::{ArgIterable, ArgSize, FuncArgs, OptionalArg, OptionalOption, PyComparisonValue},
     intern::PyInterned,
     object::{Traverse, TraverseFn},
@@ -20,10 +20,19 @@ use crate::{
         AsMapping, AsNumber, AsSequence, Comparable, Constructor, Hashable, IterNext, Iterable,
         PyComparisonOp, Representable, SelfIter, Unconstructible,
     },
-    AsObject, Context, Py, PyExact, PyObject, PyObjectRef, PyPayload, PyRef, PyRefExact, PyResult,
-    TryFromBorrowedObject, VirtualMachine,
+    AsObject,
+    Context,
+    Py,
+    PyExact,
+    PyObject,
+    PyObjectRef,
+    PyPayload,
+    PyRef,
+    PyRefExact,
+    PyResult,
+    TryFromBorrowedObject,
+    VirtualMachine,
 };
-use ascii::{AsciiStr, AsciiString};
 use bstr::ByteSlice;
 use itertools::Itertools;
 use num_traits::ToPrimitive;
@@ -34,7 +43,7 @@ use rustpython_common::{
     hash,
     lock::PyMutex,
 };
-use rustpython_format::{FormatSpec, FormatString, FromTemplate};
+// use rustpython_format::{FormatSpec, FormatString, FromTemplate};
 use std::{char, fmt, ops::Range, string::ToString};
 use unic_ucd_bidi::BidiClass;
 use unic_ucd_category::GeneralCategory;
@@ -89,17 +98,17 @@ impl AsRef<str> for PyStrRef {
     }
 }
 
-impl<'a> From<&'a AsciiStr> for PyStr {
-    fn from(s: &'a AsciiStr) -> Self {
-        s.to_owned().into()
-    }
-}
+// impl<'a> From<&'a AsciiStr> for PyStr {
+//     fn from(s: &'a AsciiStr) -> Self {
+//         s.to_owned().into()
+//     }
+// }
 
-impl From<AsciiString> for PyStr {
-    fn from(s: AsciiString) -> Self {
-        unsafe { Self::new_ascii_unchecked(s.into()) }
-    }
-}
+// impl From<AsciiString> for PyStr {
+//     fn from(s: AsciiString) -> Self {
+//         unsafe { Self::new_ascii_unchecked(s.into()) }
+//     }
+// }
 
 impl<'a> From<&'a str> for PyStr {
     fn from(s: &'a str) -> Self {
@@ -274,12 +283,13 @@ impl Constructor for PyStr {
         let string: PyStrRef = match args.object {
             OptionalArg::Present(input) => {
                 if let OptionalArg::Present(enc) = args.encoding {
-                    vm.state.codec_registry.decode_text(
-                        input,
-                        enc.as_str(),
-                        args.errors.into_option(),
-                        vm,
-                    )?
+                    // vm.state.codec_registry.decode_text(
+                    //     input,
+                    //     enc.as_str(),
+                    //     args.errors.into_option(),
+                    //     vm,
+                    // )?
+                    input.str(vm)?
                 } else {
                     input.str(vm)?
                 }
@@ -493,12 +503,13 @@ impl PyStr {
 
     #[inline]
     pub(crate) fn repr(&self, vm: &VirtualMachine) -> PyResult<String> {
-        use crate::literal::escape::UnicodeEscape;
-        let escape = UnicodeEscape::new_repr(self.as_str());
-        escape
-            .str_repr()
-            .to_string()
-            .ok_or_else(|| vm.new_overflow_error("string is too long to generate repr".to_owned()))
+        // use crate::literal::escape::UnicodeEscape;
+        // let escape = UnicodeEscape::new_repr(self.as_str());
+        // escape
+        //     .str_repr()
+        //     .to_string()
+        //     .ok_or_else(|| vm.new_overflow_error("string is too long to generate repr".to_owned()))
+        panic!("Not supported in NEAR");
     }
 
     #[pymethod]
@@ -740,8 +751,9 @@ impl PyStr {
 
     #[pymethod]
     fn format(&self, args: FuncArgs, vm: &VirtualMachine) -> PyResult<String> {
-        let format_str = FormatString::from_str(self.as_str()).map_err(|e| e.to_pyexception(vm))?;
-        format(&format_str, &args, vm)
+        // let format_str = FormatString::from_str(self.as_str()).map_err(|e| e.to_pyexception(vm))?;
+        // format(&format_str, &args, vm)
+        panic!("Not supported in NEAR");
     }
 
     /// S.format_map(mapping) -> str
@@ -750,26 +762,28 @@ impl PyStr {
     /// The substitutions are identified by braces ('{' and '}').
     #[pymethod]
     fn format_map(&self, mapping: PyObjectRef, vm: &VirtualMachine) -> PyResult<String> {
-        let format_string =
-            FormatString::from_str(self.as_str()).map_err(|err| err.to_pyexception(vm))?;
-        format_map(&format_string, &mapping, vm)
+        // let format_string =
+        //     FormatString::from_str(self.as_str()).map_err(|err| err.to_pyexception(vm))?;
+        // format_map(&format_string, &mapping, vm)
+        panic!("Not supported in NEAR");
     }
 
     #[pymethod(name = "__format__")]
     fn __format__(zelf: PyRef<Self>, spec: PyStrRef, vm: &VirtualMachine) -> PyResult<PyStrRef> {
-        let spec = spec.as_str();
-        if spec.is_empty() {
-            return if zelf.class().is(vm.ctx.types.str_type) {
-                Ok(zelf)
-            } else {
-                zelf.as_object().str(vm)
-            };
-        }
+        // let spec = spec.as_str();
+        // if spec.is_empty() {
+        //     return if zelf.class().is(vm.ctx.types.str_type) {
+        //         Ok(zelf)
+        //     } else {
+        //         zelf.as_object().str(vm)
+        //     };
+        // }
 
-        let s = FormatSpec::parse(spec)
-            .and_then(|format_spec| format_spec.format_string(zelf.borrow()))
-            .map_err(|err| err.into_pyexception(vm))?;
-        Ok(vm.ctx.new_str(s))
+        // let s = FormatSpec::parse(spec)
+        //     .and_then(|format_spec| format_spec.format_string(zelf.borrow()))
+        //     .map_err(|err| err.into_pyexception(vm))?;
+        // Ok(vm.ctx.new_str(s))
+        panic!("Not supported in NEAR");
     }
 
     /// Return a titlecased version of the string where words start with an
@@ -857,7 +871,8 @@ impl PyStr {
     ///   * Zs (Separator, Space) other than ASCII space('\x20').
     #[pymethod]
     fn isprintable(&self) -> bool {
-        self.char_all(|c| c == '\u{0020}' || rustpython_literal::char::is_printable(c))
+        // self.char_all(|c| c == '\u{0020}' || rustpython_literal::char::is_printable(c))
+        panic!("Not supported in NEAR");
     }
 
     #[pymethod]
@@ -1000,11 +1015,7 @@ impl PyStr {
         )?;
         let partition = (
             self.new_substr(front),
-            if has_mid {
-                sep
-            } else {
-                vm.ctx.new_str(ascii!(""))
-            },
+            if has_mid { sep } else { vm.ctx.new_str("") },
             self.new_substr(back),
         );
         Ok(partition.to_pyobject(vm))
@@ -1019,11 +1030,7 @@ impl PyStr {
         )?;
         Ok((
             self.new_substr(front),
-            if has_mid {
-                sep
-            } else {
-                vm.ctx.new_str(ascii!(""))
-            },
+            if has_mid { sep } else { vm.ctx.new_str("") },
             self.new_substr(back),
         )
             .to_pyobject(vm))
@@ -1411,10 +1418,11 @@ pub(crate) fn encode_string(
     errors: Option<PyStrRef>,
     vm: &VirtualMachine,
 ) -> PyResult<PyBytesRef> {
-    let encoding = encoding
-        .as_ref()
-        .map_or(crate::codecs::DEFAULT_ENCODING, |s| s.as_str());
-    vm.state.codec_registry.encode_text(s, encoding, errors, vm)
+    // let encoding = encoding
+    //     .as_ref()
+    //     .map_or(crate::codecs::DEFAULT_ENCODING, |s| s.as_str());
+    // vm.state.codec_registry.encode_text(s, encoding, errors, vm)
+    panic!("Not supported in NEAR");
 }
 
 impl PyPayload for PyStr {
@@ -1447,17 +1455,17 @@ impl ToPyObject for &String {
     }
 }
 
-impl ToPyObject for &AsciiStr {
-    fn to_pyobject(self, vm: &VirtualMachine) -> PyObjectRef {
-        vm.ctx.new_str(self).into()
-    }
-}
+// impl ToPyObject for &AsciiStr {
+//     fn to_pyobject(self, vm: &VirtualMachine) -> PyObjectRef {
+//         vm.ctx.new_str(self).into()
+//     }
+// }
 
-impl ToPyObject for AsciiString {
-    fn to_pyobject(self, vm: &VirtualMachine) -> PyObjectRef {
-        vm.ctx.new_str(self).into()
-    }
-}
+// impl ToPyObject for AsciiString {
+//     fn to_pyobject(self, vm: &VirtualMachine) -> PyObjectRef {
+//         vm.ctx.new_str(self).into()
+//     }
+// }
 
 type SplitArgs = anystr::SplitArgs<PyStrRef>;
 
@@ -1654,7 +1662,7 @@ mod tests {
                 .unwrap();
             table.set_item("b", vm.ctx.none(), vm).unwrap();
             table
-                .set_item("c", vm.ctx.new_str(ascii!("xda")).into(), vm)
+                .set_item("c", vm.ctx.new_str("xda").into(), vm)
                 .unwrap();
             let translated =
                 PyStr::maketrans(table.into(), OptionalArg::Missing, OptionalArg::Missing, vm)

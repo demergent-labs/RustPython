@@ -22,7 +22,7 @@ use crate::{
         PyBaseExceptionRef, PyDictRef, PyInt, PyList, PyModule, PyStr, PyStrInterned, PyStrRef,
         PyTypeRef,
     },
-    codecs::CodecsRegistry,
+    // codecs::CodecsRegistry,
     common::{hash::HashSecret, lock::PyMutex, rc::PyRc},
     convert::ToPyObject,
     frame::{ExecutionResult, Frame, FrameRef},
@@ -31,9 +31,16 @@ use crate::{
     import,
     protocol::PyIterIter,
     scope::Scope,
-    signal, stdlib,
-    warn::WarningsState,
-    AsObject, Py, PyObject, PyObjectRef, PyPayload, PyRef, PyResult,
+    signal,
+    stdlib,
+    // warn::WarningsState,
+    AsObject,
+    Py,
+    PyObject,
+    PyObjectRef,
+    PyPayload,
+    PyRef,
+    PyResult,
 };
 use crossbeam_utils::atomic::AtomicCell;
 #[cfg(unix)]
@@ -95,9 +102,9 @@ pub struct PyGlobalState {
     pub thread_count: AtomicCell<usize>,
     pub hash_secret: HashSecret,
     pub atexit_funcs: PyMutex<Vec<(PyObjectRef, FuncArgs)>>,
-    pub codec_registry: CodecsRegistry,
+    // pub codec_registry: CodecsRegistry,
     pub finalizing: AtomicBool,
-    pub warnings: WarningsState,
+    // pub warnings: WarningsState,
     pub override_frozen_modules: AtomicCell<isize>,
     pub before_forkers: PyMutex<Vec<PyObjectRef>>,
     pub after_forkers_child: PyMutex<Vec<PyObjectRef>>,
@@ -128,7 +135,8 @@ impl VirtualMachine {
 
         // Hard-core modules:
         let builtins = new_module(stdlib::builtins::__module_def(&ctx));
-        let sys_module = new_module(stdlib::sys::__module_def(&ctx));
+        // let sys_module = new_module(stdlib::sys::__module_def(&ctx));
+        let sys_module = builtins.clone();
 
         let import_func = ctx.none();
         let profile_func = RefCell::new(ctx.none());
@@ -146,9 +154,9 @@ impl VirtualMachine {
         };
         let hash_secret = HashSecret::new(seed);
 
-        let codec_registry = CodecsRegistry::new(&ctx);
+        // let codec_registry = CodecsRegistry::new(&ctx);
 
-        let warnings = WarningsState::init_state(&ctx);
+        // let warnings = WarningsState::init_state(&ctx);
 
         let int_max_str_digits = AtomicCell::new(match settings.int_max_str_digits {
             -1 => 4300,
@@ -177,9 +185,9 @@ impl VirtualMachine {
                 thread_count: AtomicCell::new(0),
                 hash_secret,
                 atexit_funcs: PyMutex::default(),
-                codec_registry,
+                // codec_registry,
                 finalizing: AtomicBool::new(false),
-                warnings,
+                // warnings,
                 override_frozen_modules: AtomicCell::new(0),
                 before_forkers: PyMutex::default(),
                 after_forkers_child: PyMutex::default(),
@@ -208,11 +216,11 @@ impl VirtualMachine {
             Some(vm.ctx.intern_str(stdlib::builtins::DOC.unwrap()).to_owned()),
             &vm,
         );
-        vm.sys_module.init_dict(
-            vm.ctx.intern_str("sys"),
-            Some(vm.ctx.intern_str(stdlib::sys::DOC.unwrap()).to_owned()),
-            &vm,
-        );
+        // vm.sys_module.init_dict(
+        //     vm.ctx.intern_str("sys"),
+        //     Some(vm.ctx.intern_str(stdlib::sys::DOC.unwrap()).to_owned()),
+        //     &vm,
+        // );
         // let name = vm.sys_module.get_attr("__name__", &vm).unwrap();
         vm
     }
@@ -258,20 +266,20 @@ impl VirtualMachine {
     }
 
     fn import_utf8_encodings(&mut self) -> PyResult<()> {
-        import::import_frozen(self, "codecs")?;
+        // import::import_frozen(self, "codecs")?;
         // FIXME: See corresponding part of `core_frozen_inits`
         // let encoding_module_name = if cfg!(feature = "freeze-stdlib") {
         //     "encodings.utf_8"
         // } else {
         //     "encodings_utf_8"
         // };
-        let encoding_module_name = "encodings_utf_8";
-        let encoding_module = import::import_frozen(self, encoding_module_name)?;
-        let getregentry = encoding_module.get_attr("getregentry", self)?;
-        let codec_info = getregentry.call((), self)?;
-        self.state
-            .codec_registry
-            .register_manual("utf-8", codec_info.try_into_value(self)?)?;
+        // let encoding_module_name = "encodings_utf_8";
+        // let encoding_module = import::import_frozen(self, encoding_module_name)?;
+        // let getregentry = encoding_module.get_attr("getregentry", self)?;
+        // let codec_info = getregentry.call((), self)?;
+        // self.state
+        //     .codec_registry
+        //     .register_manual("utf-8", codec_info.try_into_value(self)?)?;
         Ok(())
     }
 
@@ -283,83 +291,83 @@ impl VirtualMachine {
         }
 
         stdlib::builtins::init_module(self, &self.builtins);
-        stdlib::sys::init_module(self, &self.sys_module, &self.builtins);
+        // stdlib::sys::init_module(self, &self.sys_module, &self.builtins);
 
-        let mut essential_init = || -> PyResult {
-            import::import_builtin(self, "_typing")?;
-            #[cfg(not(target_arch = "wasm32"))]
-            import::import_builtin(self, "_signal")?;
-            #[cfg(any(feature = "parser", feature = "compiler"))]
-            import::import_builtin(self, "_ast")?;
-            #[cfg(not(feature = "threading"))]
-            import::import_frozen(self, "_thread")?;
-            let importlib = import::init_importlib_base(self)?;
-            self.import_utf8_encodings()?;
+        // let mut essential_init = || -> PyResult {
+        // import::import_builtin(self, "_typing")?;
+        // #[cfg(not(target_arch = "wasm32"))]
+        // import::import_builtin(self, "_signal")?;
+        // #[cfg(any(feature = "parser", feature = "compiler"))]
+        // import::import_builtin(self, "_ast")?;
+        // #[cfg(not(feature = "threading"))]
+        // import::import_frozen(self, "_thread")?;
+        // let importlib = import::init_importlib_base(self)?;
+        // self.import_utf8_encodings()?;
 
-            #[cfg(any(not(target_arch = "wasm32"), target_os = "wasi"))]
-            {
-                let io = import::import_builtin(self, "_io")?;
-                let set_stdio = |name, fd, write| {
-                    let buffered_stdio = self.state.settings.buffered_stdio;
-                    let unbuffered = write && !buffered_stdio;
-                    let buf = crate::stdlib::io::open(
-                        self.ctx.new_int(fd).into(),
-                        Some(if write { "wb" } else { "rb" }),
-                        crate::stdlib::io::OpenArgs {
-                            buffering: if unbuffered { 0 } else { -1 },
-                            ..Default::default()
-                        },
-                        self,
-                    )?;
-                    let raw = if unbuffered {
-                        buf.clone()
-                    } else {
-                        buf.get_attr("raw", self)?
-                    };
-                    raw.set_attr("name", self.ctx.new_str(format!("<{name}>")), self)?;
-                    let isatty = self.call_method(&raw, "isatty", ())?.is_true(self)?;
-                    let write_through = !buffered_stdio;
-                    let line_buffering = buffered_stdio && (isatty || fd == 2);
+        // #[cfg(any(not(target_arch = "wasm32"), target_os = "wasi"))]
+        // {
+        //     let io = import::import_builtin(self, "_io")?;
+        //     let set_stdio = |name, fd, write| {
+        //         let buffered_stdio = self.state.settings.buffered_stdio;
+        //         let unbuffered = write && !buffered_stdio;
+        //         let buf = crate::stdlib::io::open(
+        //             self.ctx.new_int(fd).into(),
+        //             Some(if write { "wb" } else { "rb" }),
+        //             crate::stdlib::io::OpenArgs {
+        //                 buffering: if unbuffered { 0 } else { -1 },
+        //                 ..Default::default()
+        //             },
+        //             self,
+        //         )?;
+        //         let raw = if unbuffered {
+        //             buf.clone()
+        //         } else {
+        //             buf.get_attr("raw", self)?
+        //         };
+        //         raw.set_attr("name", self.ctx.new_str(format!("<{name}>")), self)?;
+        //         let isatty = self.call_method(&raw, "isatty", ())?.is_true(self)?;
+        //         let write_through = !buffered_stdio;
+        //         let line_buffering = buffered_stdio && (isatty || fd == 2);
 
-                    let newline = if cfg!(windows) { None } else { Some("\n") };
+        //         let newline = if cfg!(windows) { None } else { Some("\n") };
 
-                    let stdio = self.call_method(
-                        &io,
-                        "TextIOWrapper",
-                        (buf, (), (), newline, line_buffering, write_through),
-                    )?;
-                    let mode = if write { "w" } else { "r" };
-                    stdio.set_attr("mode", self.ctx.new_str(mode), self)?;
+        //         let stdio = self.call_method(
+        //             &io,
+        //             "TextIOWrapper",
+        //             (buf, (), (), newline, line_buffering, write_through),
+        //         )?;
+        //         let mode = if write { "w" } else { "r" };
+        //         stdio.set_attr("mode", self.ctx.new_str(mode), self)?;
 
-                    let dunder_name = self.ctx.intern_str(format!("__{name}__"));
-                    self.sys_module.set_attr(
-                        dunder_name, // e.g. __stdin__
-                        stdio.clone(),
-                        self,
-                    )?;
-                    self.sys_module.set_attr(name, stdio, self)?;
-                    Ok(())
-                };
-                set_stdio("stdin", 0, false)?;
-                set_stdio("stdout", 1, true)?;
-                set_stdio("stderr", 2, true)?;
+        //         let dunder_name = self.ctx.intern_str(format!("__{name}__"));
+        //         self.sys_module.set_attr(
+        //             dunder_name, // e.g. __stdin__
+        //             stdio.clone(),
+        //             self,
+        //         )?;
+        //         self.sys_module.set_attr(name, stdio, self)?;
+        //         Ok(())
+        //     };
+        //     set_stdio("stdin", 0, false)?;
+        //     set_stdio("stdout", 1, true)?;
+        //     set_stdio("stderr", 2, true)?;
 
-                let io_open = io.get_attr("open", self)?;
-                self.builtins.set_attr("open", io_open, self)?;
-            }
+        //     let io_open = io.get_attr("open", self)?;
+        //     self.builtins.set_attr("open", io_open, self)?;
+        // }
 
-            Ok(importlib)
-        };
+        // Ok(importlib)
+        // };
 
-        let res = essential_init();
-        let importlib = self.expect_pyresult(res, "essential initialization failed");
+        // let res = essential_init();
+        // let importlib = self.expect_pyresult(res, "essential initialization failed");
 
-        if self.state.settings.allow_external_library && cfg!(feature = "rustpython-compiler") {
-            if let Err(e) = import::init_importlib_package(self, importlib) {
-                eprintln!("importlib initialization failed. This is critical for many complicated packages.");
-                self.print_exception(e);
-            }
-        }
+        // if self.state.settings.allow_external_library && cfg!(feature = "rustpython-compiler") {
+        //     if let Err(e) = import::init_importlib_package(self, importlib) {
+        //         eprintln!("importlib initialization failed. This is critical for many complicated packages.");
+        //         self.print_exception(e);
+        //     }
+        // }
 
         #[cfg(feature = "encodings")]
         if cfg!(feature = "freeze-stdlib") || !self.state.settings.path_list.is_empty() {
@@ -425,17 +433,17 @@ impl VirtualMachine {
         let sys_module = self.import("sys", 0).unwrap();
         let unraisablehook = sys_module.get_attr("unraisablehook", self).unwrap();
 
-        let exc_type = e.class().to_owned();
-        let exc_traceback = e.traceback().to_pyobject(self); // TODO: actual traceback
-        let exc_value = e.into();
-        let args = stdlib::sys::UnraisableHookArgs {
-            exc_type,
-            exc_value,
-            exc_traceback,
-            err_msg: self.new_pyobj(msg),
-            object,
-        };
-        if let Err(e) = unraisablehook.call((args,), self) {
+        // let exc_type = e.class().to_owned();
+        // let exc_traceback = e.traceback().to_pyobject(self); // TODO: actual traceback
+        // let exc_value = e.into();
+        // let args = stdlib::sys::UnraisableHookArgs {
+        //     exc_type,
+        //     exc_value,
+        //     exc_traceback,
+        //     err_msg: self.new_pyobj(msg),
+        //     object,
+        // };
+        if let Err(e) = unraisablehook.call((), self) {
             println!("{}", e.as_object().repr(self).unwrap().as_str());
         }
     }
@@ -840,8 +848,9 @@ impl VirtualMachine {
                 _ => args.as_object().repr(self).ok(),
             };
             if let Some(msg) = msg {
-                let stderr = stdlib::sys::PyStderr(self);
-                writeln!(stderr, "{msg}");
+                // let stderr = stdlib::sys::PyStderr(self);
+                // writeln!(stderr, "{msg}");
+                panic!("{}", msg);
             }
             1
         } else if exc.fast_isinstance(self.ctx.exceptions.keyboard_interrupt) {
@@ -925,22 +934,22 @@ fn core_frozen_inits() -> impl Iterator<Item = (&'static str, FrozenModule)> {
     // Python modules that the vm calls into, but are not actually part of the stdlib. They could
     // in theory be implemented in Rust, but are easiest to do in Python for one reason or another.
     // Includes _importlib_bootstrap and _importlib_bootstrap_external
-    ext_modules!(
-        iter,
-        dir = "./Lib/python_builtins",
-        crate_name = "rustpython_compiler_core"
-    );
+    // ext_modules!(
+    //     iter,
+    //     dir = "./Lib/python_builtins",
+    //     crate_name = "rustpython_compiler_core"
+    // );
 
     // core stdlib Python modules that the vm calls into, but are still used in Python
     // application code, e.g. copyreg
     // FIXME: Initializing core_modules here results duplicated frozen module generation for core_modules.
     // We need a way to initialize this modules for both `Interpreter::without_stdlib()` and `InterpreterConfig::new().init_stdlib().interpreter()`
     // #[cfg(not(feature = "freeze-stdlib"))]
-    ext_modules!(
-        iter,
-        dir = "./Lib/core_modules",
-        crate_name = "rustpython_compiler_core"
-    );
+    // ext_modules!(
+    //     iter,
+    //     dir = "./Lib/core_modules",
+    //     crate_name = "rustpython_compiler_core"
+    // );
 
     iter
 }

@@ -3,8 +3,8 @@
 
 use crate::{
     builtins::{
-        pystr::AsPyStr, PyAsyncGen, PyBytes, PyDict, PyDictRef, PyGenericAlias, PyInt, PyList,
-        PyStr, PyStrRef, PyTuple, PyTupleRef, PyType, PyTypeRef,
+        pystr::AsPyStr, PyBytes, PyDict, PyDictRef, PyGenericAlias, PyInt, PyList, PyStr, PyStrRef,
+        PyTuple, PyTupleRef, PyType, PyTypeRef,
     },
     bytesinner::ByteInnerNewOptions,
     common::{hash::PyHash, str::to_ascii},
@@ -93,7 +93,7 @@ impl PyObject {
 
     // PyObject *PyObject_GetAIter(PyObject *o)
     pub fn get_aiter(&self, vm: &VirtualMachine) -> PyResult {
-        if self.payload_is::<PyAsyncGen>() {
+        if false {
             vm.call_special_method(self, identifier!(vm, __aiter__), ())
         } else {
             Err(vm.new_type_error("wrong argument type".to_owned()))
@@ -350,11 +350,11 @@ impl PyObject {
         })
     }
 
-    pub fn ascii(&self, vm: &VirtualMachine) -> PyResult<ascii::AsciiString> {
-        let repr = self.repr(vm)?;
-        let ascii = to_ascii(repr.as_str());
-        Ok(ascii)
-    }
+    // pub fn ascii(&self, vm: &VirtualMachine) -> PyResult<ascii::AsciiString> {
+    //     let repr = self.repr(vm)?;
+    //     let ascii = to_ascii(repr.as_str());
+    //     Ok(ascii)
+    // }
 
     // Container of the virtual machine state:
     pub fn str(&self, vm: &VirtualMachine) -> PyResult<PyStrRef> {

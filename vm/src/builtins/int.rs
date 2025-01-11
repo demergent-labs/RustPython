@@ -20,7 +20,7 @@ use crate::{
 use malachite_bigint::{BigInt, Sign};
 use num_integer::Integer;
 use num_traits::{One, Pow, PrimInt, Signed, ToPrimitive, Zero};
-use rustpython_format::FormatSpec;
+// use rustpython_format::FormatSpec;
 use std::fmt;
 use std::ops::{Neg, Not};
 
@@ -584,9 +584,10 @@ impl PyInt {
 
     #[pymethod(magic)]
     fn format(&self, spec: PyStrRef, vm: &VirtualMachine) -> PyResult<String> {
-        FormatSpec::parse(spec.as_str())
-            .and_then(|format_spec| format_spec.format_int(&self.value))
-            .map_err(|err| err.into_pyexception(vm))
+        // FormatSpec::parse(spec.as_str())
+        //     .and_then(|format_spec| format_spec.format_int(&self.value))
+        //     .map_err(|err| err.into_pyexception(vm))
+        panic!("Not supported in NEAR");
     }
 
     #[pymethod(magic)]

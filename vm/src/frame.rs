@@ -1,7 +1,6 @@
 use crate::common::{boxvec::BoxVec, lock::PyMutex};
 use crate::{
     builtins::{
-        asyncgenerator::PyAsyncGenWrappedValue,
         function::{PyCell, PyCellRef, PyFunction},
         tuple::{PyTuple, PyTupleRef, PyTupleTyped},
         PyBaseExceptionRef, PyCode, PyCoroutine, PyDict, PyDictRef, PyGenerator, PyList, PySet,
@@ -15,7 +14,7 @@ use crate::{
     protocol::{PyIter, PyIterReturn},
     scope::Scope,
     source_code::SourceLocation,
-    stdlib::{builtins, typing::_typing},
+    stdlib::builtins,
     vm::{Context, PyMethod},
     AsObject, Py, PyObject, PyObjectRef, PyPayload, PyRef, PyResult, TryFromObject, VirtualMachine,
 };
@@ -813,7 +812,7 @@ impl ExecutingFrame<'_> {
             bytecode::Instruction::YieldValue => {
                 let value = self.pop_value();
                 let value = if self.code.flags.contains(bytecode::CodeFlags::IS_COROUTINE) {
-                    PyAsyncGenWrappedValue(value).into_pyobject(vm)
+                    panic!("Not supported in NEAR");
                 } else {
                     value
                 };
@@ -1005,7 +1004,7 @@ impl ExecutingFrame<'_> {
                 let orig_stack_len = self.state.stack.len();
 
                 let aiter = self.top_value();
-                let awaitable = if aiter.class().is(vm.ctx.types.async_generator) {
+                let awaitable = if false {
                     vm.call_special_method(aiter, identifier!(vm, __anext__), ())?
                 } else {
                     if !aiter.has_attr("__anext__", vm).unwrap_or(false) {
@@ -1163,44 +1162,48 @@ impl ExecutingFrame<'_> {
                 Ok(None)
             }
             bytecode::Instruction::TypeVar => {
-                let type_name = self.pop_value();
-                let type_var: PyObjectRef =
-                    _typing::make_typevar(vm, type_name.clone(), vm.ctx.none(), vm.ctx.none())
-                        .into_ref(&vm.ctx)
-                        .into();
-                self.push_value(type_var);
-                Ok(None)
+                // let type_name = self.pop_value();
+                // let type_var: PyObjectRef =
+                //     _typing::make_typevar(vm, type_name.clone(), vm.ctx.none(), vm.ctx.none())
+                //         .into_ref(&vm.ctx)
+                //         .into();
+                // self.push_value(type_var);
+                // Ok(None)
+                panic!("Not supported in NEAR");
             }
             bytecode::Instruction::TypeVarWithBound => {
-                let type_name = self.pop_value();
-                let bound = self.pop_value();
-                let type_var: PyObjectRef =
-                    _typing::make_typevar(vm, type_name.clone(), bound, vm.ctx.none())
-                        .into_ref(&vm.ctx)
-                        .into();
-                self.push_value(type_var);
-                Ok(None)
+                // let type_name = self.pop_value();
+                // let bound = self.pop_value();
+                // let type_var: PyObjectRef =
+                //     _typing::make_typevar(vm, type_name.clone(), bound, vm.ctx.none())
+                //         .into_ref(&vm.ctx)
+                //         .into();
+                // self.push_value(type_var);
+                // Ok(None)
+                panic!("Not supported in NEAR");
             }
             bytecode::Instruction::TypeVarWithConstraint => {
-                let type_name = self.pop_value();
-                let constraint = self.pop_value();
-                let type_var: PyObjectRef =
-                    _typing::make_typevar(vm, type_name.clone(), vm.ctx.none(), constraint)
-                        .into_ref(&vm.ctx)
-                        .into();
-                self.push_value(type_var);
-                Ok(None)
+                // let type_name = self.pop_value();
+                // let constraint = self.pop_value();
+                // let type_var: PyObjectRef =
+                //     _typing::make_typevar(vm, type_name.clone(), vm.ctx.none(), constraint)
+                //         .into_ref(&vm.ctx)
+                //         .into();
+                // self.push_value(type_var);
+                // Ok(None)
+                panic!("Not supported in NEAR");
             }
             bytecode::Instruction::TypeAlias => {
-                let name = self.pop_value();
-                let type_params: PyTupleRef = self
-                    .pop_value()
-                    .downcast()
-                    .map_err(|_| vm.new_type_error("Type params must be a tuple.".to_owned()))?;
-                let value = self.pop_value();
-                let type_alias = _typing::TypeAliasType::new(name, type_params, value);
-                self.push_value(type_alias.into_ref(&vm.ctx).into());
-                Ok(None)
+                // let name = self.pop_value();
+                // let type_params: PyTupleRef = self
+                //     .pop_value()
+                //     .downcast()
+                //     .map_err(|_| vm.new_type_error("Type params must be a tuple.".to_owned()))?;
+                // let value = self.pop_value();
+                // let type_alias = _typing::TypeAliasType::new(name, type_params, value);
+                // self.push_value(type_alias.into_ref(&vm.ctx).into());
+                // Ok(None)
+                panic!("Not supported in NEAR");
             }
         }
     }
@@ -1900,7 +1903,7 @@ impl ExecutingFrame<'_> {
         let value = match conversion {
             ConversionFlag::Str => value.str(vm)?.into(),
             ConversionFlag::Repr => value.repr(vm)?.into(),
-            ConversionFlag::Ascii => vm.ctx.new_str(builtins::ascii(value, vm)?).into(),
+            ConversionFlag::Ascii => panic!("Not supported in NEAR"),
             ConversionFlag::None => value,
         };
 

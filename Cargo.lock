@@ -1272,6 +1272,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "num-bigint"
+version = "0.4.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a5e44f723f1133c9deac646763579fdb3ac745e418f2a7af9cd0c431da1f20b9"
+dependencies = [
+ "num-integer",
+ "num-traits",
+]
+
+[[package]]
 name = "num-complex"
 version = "0.4.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1863,6 +1873,7 @@ dependencies = [
  "insta",
  "itertools 0.11.0",
  "log",
+ "num-bigint",
  "num-complex",
  "num-traits",
  "rustpython-ast",
@@ -1884,6 +1895,7 @@ dependencies = [
  "malachite-base",
  "malachite-bigint",
  "malachite-q",
+ "num-bigint",
  "num-complex",
  "num-traits",
  "once_cell",
@@ -1913,7 +1925,7 @@ dependencies = [
  "bitflags 2.6.0",
  "itertools 0.11.0",
  "lz4_flex",
- "malachite-bigint",
+ "num-bigint",
  "num-complex",
  "rustpython-parser-core",
  "serde",
@@ -2156,10 +2168,10 @@ dependencies = [
  "junction",
  "libc",
  "log",
- "malachite-bigint",
  "memchr",
  "memoffset",
  "nix 0.29.0",
+ "num-bigint",
  "num-complex",
  "num-integer",
  "num-traits",

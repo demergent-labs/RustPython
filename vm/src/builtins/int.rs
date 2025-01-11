@@ -17,7 +17,7 @@ use crate::{
     AsObject, Context, Py, PyObject, PyObjectRef, PyPayload, PyRef, PyRefExact, PyResult,
     TryFromBorrowedObject, VirtualMachine,
 };
-use malachite_bigint::{BigInt, Sign};
+use num_bigint::{BigInt, Sign};
 use num_integer::Integer;
 use num_traits::{One, Pow, PrimInt, Signed, ToPrimitive, Zero};
 // use rustpython_format::FormatSpec;
@@ -749,7 +749,8 @@ impl Representable for PyInt {
 impl Hashable for PyInt {
     #[inline]
     fn hash(zelf: &Py<Self>, _vm: &VirtualMachine) -> PyResult<hash::PyHash> {
-        Ok(hash::hash_bigint(zelf.as_bigint()))
+        // Ok(hash::hash_bigint(zelf.as_bigint()))
+        panic!("Not supported in NEAR");
     }
 }
 

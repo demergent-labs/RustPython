@@ -23,6 +23,7 @@ use rustpython_compiler_core::{
 };
 use rustpython_parser_core::source_code::{LineNumber, SourceLocation};
 use std::borrow::Cow;
+use std::str::FromStr;
 
 type CompileResult<T> = Result<T, CodegenError>;
 
@@ -3253,7 +3254,9 @@ fn compile_constant(value: &located_ast::Constant) -> ConstantData {
         located_ast::Constant::Bool(b) => ConstantData::Boolean { value: *b },
         located_ast::Constant::Str(s) => ConstantData::Str { value: s.clone() },
         located_ast::Constant::Bytes(b) => ConstantData::Bytes { value: b.clone() },
-        located_ast::Constant::Int(i) => ConstantData::Integer { value: i.clone() },
+        located_ast::Constant::Int(i) => ConstantData::Integer {
+            value: num_bigint::BigInt::from_str(&i.to_string()).unwrap(),
+        },
         located_ast::Constant::Tuple(t) => ConstantData::Tuple {
             elements: t.iter().map(compile_constant).collect(),
         },

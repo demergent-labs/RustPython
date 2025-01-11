@@ -10,9 +10,13 @@ license.workspace = true
 
 
 [dependencies]
-rustpython-ast = { workspace = true, features=["unparse", "constant-optimization"] }
+rustpython-ast = { workspace = true, features = [
+    "unparse",
+    "constant-optimization",
+] }
 rustpython-parser-core = { workspace = true }
 rustpython-compiler-core = { workspace = true }
+num-bigint = { version = "0.4.6", default-features = false, features = [] }
 
 ahash = { workspace = true }
 bitflags = { workspace = true }

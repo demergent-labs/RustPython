@@ -69,7 +69,8 @@ is-macro = { workspace = true, default-features = false, features = [] }
 libc = { workspace = true, default-features = false, features = [] }
 log = { workspace = true, default-features = false, features = [] }
 nix = { workspace = true, default-features = false, features = [] }
-malachite-bigint = { workspace = true, default-features = false, features = [] }
+# malachite-bigint = { workspace = true, default-features = false, features = [] }
+num-bigint = { version = "0.4.6", default-features = false, features = [] }
 num-complex = { workspace = true, default-features = false, features = [] }
 num-integer = { workspace = true, default-features = false, features = [] }
 num-traits = { workspace = true, default-features = false, features = [] }

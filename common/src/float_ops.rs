@@ -1,4 +1,4 @@
-use malachite_bigint::{BigInt, ToBigInt};
+use num_bigint::{BigInt, ToBigInt};
 use num_traits::{Float, Signed, ToPrimitive, Zero};
 use std::f64;
 

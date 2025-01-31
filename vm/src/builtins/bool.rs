@@ -9,9 +9,9 @@ use crate::{
     AsObject, Context, Py, PyObject, PyObjectRef, PyPayload, PyResult, TryFromBorrowedObject,
     VirtualMachine,
 };
-use malachite_bigint::Sign;
+use num_bigint::Sign;
 use num_traits::Zero;
-use rustpython_format::FormatSpec;
+// use rustpython_format::FormatSpec;
 use std::fmt::{Debug, Formatter};
 
 impl ToPyObject for bool {
@@ -112,10 +112,11 @@ impl Constructor for PyBool {
 impl PyBool {
     #[pymethod(magic)]
     fn format(obj: PyObjectRef, spec: PyStrRef, vm: &VirtualMachine) -> PyResult<String> {
-        let new_bool = obj.try_to_bool(vm)?;
-        FormatSpec::parse(spec.as_str())
-            .and_then(|format_spec| format_spec.format_bool(new_bool))
-            .map_err(|err| err.into_pyexception(vm))
+        // let new_bool = obj.try_to_bool(vm)?;
+        // FormatSpec::parse(spec.as_str())
+        //     .and_then(|format_spec| format_spec.format_bool(new_bool))
+        //     .map_err(|err| err.into_pyexception(vm))
+        panic!("Not supported in NEAR");
     }
 
     #[pymethod(name = "__ror__")]

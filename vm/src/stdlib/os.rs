@@ -1465,7 +1465,7 @@ pub(super) mod _os {
     impl UnameResult {}
 
     pub(super) fn support_funcs() -> Vec<SupportFunc> {
-        let mut supports = super::platform::module::support_funcs();
+        let mut supports = vec![];
         supports.extend(vec![
             SupportFunc::new("open", Some(false), Some(OPEN_DIR_FD), Some(false)),
             SupportFunc::new("access", Some(false), Some(false), None),
@@ -1550,10 +1550,4 @@ pub fn extend_module(vm: &VirtualMachine, module: &Py<PyModule>) {
     });
 }
 
-#[cfg(not(windows))]
-use super::posix as platform;
-
-#[cfg(windows)]
-use super::nt as platform;
-
-pub(crate) use platform::module::MODULE_NAME;
+pub const MODULE_NAME: &str = "os";

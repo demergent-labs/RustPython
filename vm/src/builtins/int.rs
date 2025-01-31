@@ -17,10 +17,10 @@ use crate::{
     AsObject, Context, Py, PyObject, PyObjectRef, PyPayload, PyRef, PyRefExact, PyResult,
     TryFromBorrowedObject, VirtualMachine,
 };
-use malachite_bigint::{BigInt, Sign};
+use num_bigint::{BigInt, Sign};
 use num_integer::Integer;
 use num_traits::{One, Pow, PrimInt, Signed, ToPrimitive, Zero};
-use rustpython_format::FormatSpec;
+// use rustpython_format::FormatSpec;
 use std::fmt;
 use std::ops::{Neg, Not};
 
@@ -584,9 +584,10 @@ impl PyInt {
 
     #[pymethod(magic)]
     fn format(&self, spec: PyStrRef, vm: &VirtualMachine) -> PyResult<String> {
-        FormatSpec::parse(spec.as_str())
-            .and_then(|format_spec| format_spec.format_int(&self.value))
-            .map_err(|err| err.into_pyexception(vm))
+        // FormatSpec::parse(spec.as_str())
+        //     .and_then(|format_spec| format_spec.format_int(&self.value))
+        //     .map_err(|err| err.into_pyexception(vm))
+        panic!("Not supported in NEAR");
     }
 
     #[pymethod(magic)]
@@ -748,7 +749,8 @@ impl Representable for PyInt {
 impl Hashable for PyInt {
     #[inline]
     fn hash(zelf: &Py<Self>, _vm: &VirtualMachine) -> PyResult<hash::PyHash> {
-        Ok(hash::hash_bigint(zelf.as_bigint()))
+        // Ok(hash::hash_bigint(zelf.as_bigint()))
+        panic!("Not supported in NEAR");
     }
 }
 

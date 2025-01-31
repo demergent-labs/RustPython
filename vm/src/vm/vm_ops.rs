@@ -140,7 +140,7 @@ impl VirtualMachine {
             Ok(0)
         } else {
             let n = n as usize;
-            if length > crate::stdlib::sys::MAXSIZE as usize / n {
+            if length > isize::MAX as usize / n {
                 Err(self.new_overflow_error("repeated value are too long".to_owned()))
             } else {
                 Ok(n)

@@ -346,8 +346,8 @@ fn show_warning(
     _source_line: Option<PyObjectRef>,
     vm: &VirtualMachine,
 ) -> PyResult<()> {
-    let stderr = crate::stdlib::sys::PyStderr(vm);
-    writeln!(stderr, "{}: {}", category.name(), text.as_str(),);
+    // let stderr = crate::stdlib::sys::PyStderr(vm);
+    println!("{}: {}", category.name(), text.as_str(),);
     Ok(())
 }
 

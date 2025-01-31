@@ -11,23 +11,52 @@ use crate::{
 use rand::Rng;
 
 pub(crate) fn init_importlib_base(vm: &mut VirtualMachine) -> PyResult<PyObjectRef> {
-    flame_guard!("init importlib");
+    let log_message = "init_importlib_base 0";
+    unsafe { near_sys::log_utf8(log_message.len() as _, log_message.as_ptr() as _) };
 
     // importlib_bootstrap needs these and it inlines checks to sys.modules before calling into
     // import machinery, so this should bring some speedup
-    #[cfg(all(feature = "threading", not(target_os = "wasi")))]
-    import_builtin(vm, "_thread")?;
-    import_builtin(vm, "_warnings")?;
-    import_builtin(vm, "_weakref")?;
+    // import_builtin(vm, "_warnings")?; // TODO we might have to remove these references in the python file
+    // import_builtin(vm, "_weakref")?; // TODO this might be required
+
+    let log_message = "init_importlib_base 1";
+    unsafe { near_sys::log_utf8(log_message.len() as _, log_message.as_ptr() as _) };
 
     let importlib = thread::enter_vm(vm, || {
+        let log_message = "init_importlib_base 2";
+        unsafe { near_sys::log_utf8(log_message.len() as _, log_message.as_ptr() as _) };
+
         let bootstrap = import_frozen(vm, "_frozen_importlib")?;
+
+        let log_message = "init_importlib_base 3";
+        unsafe { near_sys::log_utf8(log_message.len() as _, log_message.as_ptr() as _) };
+
         let install = bootstrap.get_attr("_install", vm)?;
+
+        let log_message = "init_importlib_base 4";
+        unsafe { near_sys::log_utf8(log_message.len() as _, log_message.as_ptr() as _) };
+
         let imp = import_builtin(vm, "_imp")?;
+
+        let log_message = "init_importlib_base 5";
+        unsafe { near_sys::log_utf8(log_message.len() as _, log_message.as_ptr() as _) };
+
         install.call((vm.sys_module.clone(), imp), vm)?;
+
+        let log_message = "init_importlib_base 6";
+        unsafe { near_sys::log_utf8(log_message.len() as _, log_message.as_ptr() as _) };
+
         Ok(bootstrap)
     })?;
+
+    let log_message = "init_importlib_base 7";
+    unsafe { near_sys::log_utf8(log_message.len() as _, log_message.as_ptr() as _) };
+
     vm.import_func = importlib.get_attr(identifier!(vm, __import__), vm)?;
+
+    let log_message = "init_importlib_base 8";
+    unsafe { near_sys::log_utf8(log_message.len() as _, log_message.as_ptr() as _) };
+
     Ok(importlib)
 }
 

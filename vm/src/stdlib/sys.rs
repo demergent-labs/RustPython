@@ -15,7 +15,7 @@ mod sys {
         convert::ToPyObject,
         frame::FrameRef,
         function::{FuncArgs, OptionalArg, PosArgs},
-        stdlib::{builtins, warnings::warn},
+        stdlib::builtins,
         types::PyStructSequence,
         version,
         vm::{Settings, VirtualMachine},
@@ -187,7 +187,7 @@ mod sys {
         if let Some(exec_path) = env::args().next() {
             let path = path::Path::new(&exec_path);
             if !path.exists() {
-                return ctx.new_str(ascii!("")).into();
+                return ctx.new_str("").into();
             }
             if path.is_absolute() {
                 return ctx.new_str(exec_path).into();
@@ -210,7 +210,7 @@ mod sys {
     #[pyattr]
     fn _git(vm: &VirtualMachine) -> PyTupleRef {
         vm.new_tuple((
-            ascii!("RustPython"),
+            "RustPython",
             version::get_git_identifier(),
             version::get_git_revision(),
         ))
@@ -221,8 +221,8 @@ mod sys {
         // TODO: Add crate version to this namespace
         let ctx = &vm.ctx;
         py_namespace!(vm, {
-            "name" => ctx.new_str(ascii!("rustpython")),
-            "cache_tag" => ctx.new_str(ascii!("rustpython-01")),
+            "name" => ctx.new_str("rustpython"),
+            "cache_tag" => ctx.new_str("rustpython-01"),
             "_multiarch" => ctx.new_str(MULTIARCH.to_owned()),
             "version" => version_info(vm),
             "hexversion" => ctx.new_int(version::VERSION_HEX),
@@ -362,16 +362,7 @@ mod sys {
             return Ok(vm.ctx.none());
         };
 
-        let print_unimportable_module_warn = || {
-            warn(
-                vm.ctx.exceptions.runtime_warning,
-                format!("Ignoring unimportable $PYTHONBREAKPOINT: \"{env_var}\"",),
-                0,
-                vm,
-            )
-            .unwrap();
-            Ok(vm.ctx.none())
-        };
+        let print_unimportable_module_warn = || Ok(vm.ctx.none());
 
         let last = match env_var.rsplit_once('.') {
             Some((_, last)) => last,
@@ -418,7 +409,7 @@ mod sys {
 
     #[pyfunction]
     fn getdefaultencoding() -> &'static str {
-        crate::codecs::DEFAULT_ENCODING
+        "utf-8"
     }
 
     #[pyfunction]
@@ -681,11 +672,11 @@ mod sys {
         update_use_tracing(vm);
     }
 
-    #[cfg(feature = "threading")]
-    #[pyattr]
-    fn thread_info(vm: &VirtualMachine) -> PyTupleRef {
-        PyThreadInfo::INFO.into_struct_sequence(vm)
-    }
+    // #[cfg(feature = "threading")]
+    // #[pyattr]
+    // fn thread_info(vm: &VirtualMachine) -> PyTupleRef {
+    //     PyThreadInfo::INFO.into_struct_sequence(vm)
+    // }
 
     #[pyattr]
     fn version_info(vm: &VirtualMachine) -> PyTupleRef {
@@ -850,26 +841,26 @@ mod sys {
         }
     }
 
-    #[cfg(feature = "threading")]
-    #[pyclass(no_attr, name = "thread_info")]
-    #[derive(PyStructSequence)]
-    pub(super) struct PyThreadInfo {
-        name: Option<&'static str>,
-        lock: Option<&'static str>,
-        version: Option<&'static str>,
-    }
+    // #[cfg(feature = "threading")]
+    // #[pyclass(no_attr, name = "thread_info")]
+    // #[derive(PyStructSequence)]
+    // pub(super) struct PyThreadInfo {
+    //     name: Option<&'static str>,
+    //     lock: Option<&'static str>,
+    //     version: Option<&'static str>,
+    // }
 
-    #[cfg(feature = "threading")]
-    #[pyclass(with(PyStructSequence))]
-    impl PyThreadInfo {
-        const INFO: Self = PyThreadInfo {
-            name: crate::stdlib::thread::_thread::PYTHREAD_NAME,
-            // As I know, there's only way to use lock as "Mutex" in Rust
-            // with satisfying python document spec.
-            lock: Some("mutex+cond"),
-            version: None,
-        };
-    }
+    // #[cfg(feature = "threading")]
+    // #[pyclass(with(PyStructSequence))]
+    // impl PyThreadInfo {
+    //     const INFO: Self = PyThreadInfo {
+    //         name: crate::stdlib::thread::_thread::PYTHREAD_NAME,
+    //         // As I know, there's only way to use lock as "Mutex" in Rust
+    //         // with satisfying python document spec.
+    //         lock: Some("mutex+cond"),
+    //         version: None,
+    //     };
+    // }
 
     #[pyclass(no_attr, name = "float_info")]
     #[derive(PyStructSequence)]
@@ -1017,9 +1008,14 @@ mod sys {
     #[pyclass(with(PyStructSequence))]
     impl UnraisableHookArgs {}
 }
-
 pub(crate) fn init_module(vm: &VirtualMachine, module: &Py<PyModule>, builtins: &Py<PyModule>) {
+    let log_message = "init_module 0";
+    unsafe { near_sys::log_utf8(log_message.len() as _, log_message.as_ptr() as _) };
+
     sys::extend_module(vm, module).unwrap();
+
+    let log_message = "init_module 1";
+    unsafe { near_sys::log_utf8(log_message.len() as _, log_message.as_ptr() as _) };
 
     let modules = vm.ctx.new_dict();
     modules
@@ -1028,10 +1024,17 @@ pub(crate) fn init_module(vm: &VirtualMachine, module: &Py<PyModule>, builtins: 
     modules
         .set_item("builtins", builtins.to_owned().into(), vm)
         .unwrap();
+
+    let log_message = "init_module 2";
+    unsafe { near_sys::log_utf8(log_message.len() as _, log_message.as_ptr() as _) };
+
     extend_module!(vm, module, {
         "__doc__" => sys::DOC.to_owned().to_pyobject(vm),
         "modules" => modules,
     });
+
+    let log_message = "init_module 3";
+    unsafe { near_sys::log_utf8(log_message.len() as _, log_message.as_ptr() as _) };
 }
 
 /// Similar to PySys_WriteStderr in CPython.

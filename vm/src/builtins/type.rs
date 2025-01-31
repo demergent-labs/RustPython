@@ -687,7 +687,7 @@ impl PyType {
                     Some(found)
                 }
             })
-            .unwrap_or_else(|| vm.ctx.new_str(ascii!("builtins")).into())
+            .unwrap_or_else(|| vm.ctx.new_str("builtins").into())
     }
 
     #[pygetset(magic, setter)]

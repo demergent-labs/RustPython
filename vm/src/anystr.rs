@@ -1,9 +1,14 @@
 use crate::{
     builtins::{PyIntRef, PyTuple},
-    cformat::cformat_string,
+    // cformat::cformat_string,
     convert::TryFromBorrowedObject,
     function::OptionalOption,
-    Py, PyObject, PyObjectRef, PyResult, TryFromObject, VirtualMachine,
+    Py,
+    PyObject,
+    PyObjectRef,
+    PyResult,
+    TryFromObject,
+    VirtualMachine,
 };
 use num_traits::{cast::ToPrimitive, sign::Signed};
 
@@ -434,8 +439,9 @@ pub trait AnyStr {
     }
 
     fn py_cformat(&self, values: PyObjectRef, vm: &VirtualMachine) -> PyResult<String> {
-        let format_string = self.as_utf8_str().unwrap();
-        cformat_string(vm, format_string, values)
+        // let format_string = self.as_utf8_str().unwrap();
+        // cformat_string(vm, format_string, values)
+        panic!("Not supported in NEAR");
     }
 }
 

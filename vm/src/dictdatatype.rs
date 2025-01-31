@@ -915,7 +915,7 @@ fn str_exact<'a>(obj: &'a PyObject, vm: &VirtualMachine) -> Option<&'a PyStr> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{common::ascii, Interpreter};
+    use crate::Interpreter;
 
     #[test]
     fn test_insert() {
@@ -924,12 +924,12 @@ mod tests {
             assert_eq!(0, dict.len());
 
             let key1 = vm.new_pyobj(true);
-            let value1 = vm.new_pyobj(ascii!("abc"));
+            let value1 = vm.new_pyobj("abc");
             dict.insert(vm, &*key1, value1).unwrap();
             assert_eq!(1, dict.len());
 
-            let key2 = vm.new_pyobj(ascii!("x"));
-            let value2 = vm.new_pyobj(ascii!("def"));
+            let key2 = vm.new_pyobj("x");
+            let value2 = vm.new_pyobj("def");
             dict.insert(vm, &*key2, value2.clone()).unwrap();
             assert_eq!(2, dict.len());
 

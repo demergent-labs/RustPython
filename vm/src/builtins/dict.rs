@@ -307,10 +307,7 @@ impl PyDict {
     #[pymethod]
     fn popitem(&self, vm: &VirtualMachine) -> PyResult<(PyObjectRef, PyObjectRef)> {
         let (key, value) = self.entries.pop_back().ok_or_else(|| {
-            let err_msg = vm
-                .ctx
-                .new_str(ascii!("popitem(): dictionary is empty"))
-                .into();
+            let err_msg = vm.ctx.new_str("popitem(): dictionary is empty").into();
             vm.new_key_error(err_msg)
         })?;
         Ok((key, value))

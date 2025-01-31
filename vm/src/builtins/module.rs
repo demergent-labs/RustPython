@@ -100,17 +100,34 @@ impl Py<PyModule> {
     }
 
     fn getattr_inner(&self, name: &Py<PyStr>, vm: &VirtualMachine) -> PyResult {
+        let log_message = "getattr_inner 0";
+        unsafe { near_sys::log_utf8(log_message.len() as _, log_message.as_ptr() as _) };
+
         if let Some(attr) = self.as_object().generic_getattr_opt(name, None, vm)? {
             return Ok(attr);
         }
+
+        let log_message = "getattr_inner 1";
+        unsafe { near_sys::log_utf8(log_message.len() as _, log_message.as_ptr() as _) };
+
         if let Ok(getattr) = self.dict().get_item(identifier!(vm, __getattr__), vm) {
             return getattr.call((name.to_owned(),), vm);
         }
+
+        let log_message = "getattr_inner 2";
+        unsafe { near_sys::log_utf8(log_message.len() as _, log_message.as_ptr() as _) };
+
         let module_name = if let Some(name) = self.name(vm) {
             format!(" '{name}'")
         } else {
             "".to_owned()
         };
+
+        let log_message = "getattr_inner 3";
+        unsafe { near_sys::log_utf8(log_message.len() as _, log_message.as_ptr() as _) };
+        // let log_message = "getattr_inner 4";
+        // let error_msg = format!("module{module_name} has no attribute '{name}'");
+        // unsafe { near_sys::log_utf8(error_msg.len() as _, error_msg.as_ptr() as _) };
         Err(vm.new_attribute_error(format!("module{module_name} has no attribute '{name}'")))
     }
 
@@ -147,7 +164,14 @@ impl Py<PyModule> {
     }
 
     pub fn get_attr<'a>(&self, attr_name: impl AsPyStr<'a>, vm: &VirtualMachine) -> PyResult {
+        let log_message = "get_attr 0";
+        unsafe { near_sys::log_utf8(log_message.len() as _, log_message.as_ptr() as _) };
+
         let attr_name = attr_name.as_pystr(&vm.ctx);
+
+        let log_message = "get_attr 1";
+        unsafe { near_sys::log_utf8(log_message.len() as _, log_message.as_ptr() as _) };
+
         self.getattr_inner(attr_name, vm)
     }
 

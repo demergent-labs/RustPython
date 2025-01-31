@@ -1,32 +1,32 @@
-use malachite_base::{num::conversion::traits::RoundingInto, rounding_modes::RoundingMode};
-use malachite_bigint::{BigInt, BigUint, Sign};
-use malachite_q::Rational;
-use num_traits::{One, ToPrimitive, Zero};
+use num_bigint::{BigInt, BigUint, Sign};
+use num_traits::{ToPrimitive, Zero};
 
 pub fn true_div(numerator: &BigInt, denominator: &BigInt) -> f64 {
-    let rational = Rational::from_integers_ref(numerator.into(), denominator.into());
-    match rational.rounding_into(RoundingMode::Nearest) {
-        // returned value is $t::MAX but still less than the original
-        (val, std::cmp::Ordering::Less) if val == f64::MAX => f64::INFINITY,
-        // returned value is $t::MIN but still greater than the original
-        (val, std::cmp::Ordering::Greater) if val == f64::MIN => f64::NEG_INFINITY,
-        (val, _) => val,
-    }
+    // let rational = Rational::from_integers_ref(numerator.into(), denominator.into());
+    // match rational.rounding_into(RoundingMode::Nearest) {
+    //     // returned value is $t::MAX but still less than the original
+    //     (val, std::cmp::Ordering::Less) if val == f64::MAX => f64::INFINITY,
+    //     // returned value is $t::MIN but still greater than the original
+    //     (val, std::cmp::Ordering::Greater) if val == f64::MIN => f64::NEG_INFINITY,
+    //     (val, _) => val,
+    // }
+    panic!("Not supported in NEAR");
 }
 
 pub fn float_to_ratio(value: f64) -> Option<(BigInt, BigInt)> {
-    let sign = match std::cmp::PartialOrd::partial_cmp(&value, &0.0)? {
-        std::cmp::Ordering::Less => Sign::Minus,
-        std::cmp::Ordering::Equal => return Some((BigInt::zero(), BigInt::one())),
-        std::cmp::Ordering::Greater => Sign::Plus,
-    };
-    Rational::try_from(value).ok().map(|x| {
-        let (numer, denom) = x.into_numerator_and_denominator();
-        (
-            BigInt::from_biguint(sign, numer.into()),
-            BigUint::from(denom).into(),
-        )
-    })
+    // let sign = match std::cmp::PartialOrd::partial_cmp(&value, &0.0)? {
+    //     std::cmp::Ordering::Less => Sign::Minus,
+    //     std::cmp::Ordering::Equal => return Some((BigInt::zero(), BigInt::one())),
+    //     std::cmp::Ordering::Greater => Sign::Plus,
+    // };
+    // Rational::try_from(value).ok().map(|x| {
+    //     let (numer, denom) = x.into_numerator_and_denominator();
+    //     (
+    //         BigInt::from_biguint(sign, numer.into()),
+    //         BigUint::from(denom).into(),
+    //     )
+    // })
+    panic!("Not supported in NEAR");
 }
 
 pub fn bytes_to_int(lit: &[u8], mut base: u32) -> Option<BigInt> {

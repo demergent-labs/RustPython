@@ -1,9 +1,12 @@
 #[cfg(feature = "jit")]
 mod jitfunc;
 
+#[cfg(feature = "builtin_asyncgenerator")]
+use crate::builtins::asyncgenerator::PyAsyncGen;
+
 use super::{
-    tuple::PyTupleTyped, PyAsyncGen, PyCode, PyCoroutine, PyDictRef, PyGenerator, PyStr, PyStrRef,
-    PyTupleRef, PyType, PyTypeRef,
+    tuple::PyTupleTyped, PyCode, PyCoroutine, PyDictRef, PyGenerator, PyStr, PyStrRef, PyTupleRef,
+    PyType, PyTypeRef,
 };
 #[cfg(feature = "jit")]
 use crate::common::lock::OnceCell;
@@ -344,7 +347,14 @@ impl PyFunction {
         match (is_gen, is_coro) {
             (true, false) => Ok(PyGenerator::new(frame, self.name()).into_pyobject(vm)),
             (false, true) => Ok(PyCoroutine::new(frame, self.name()).into_pyobject(vm)),
+            #[cfg(feature = "builtin_asyncgenerator")]
             (true, true) => Ok(PyAsyncGen::new(frame, self.name()).into_pyobject(vm)),
+            #[cfg(not(feature = "builtin_asyncgenerator"))]
+            (true, true) => {
+                return Err(
+                    vm.new_type_error("Async generator functions are only supported with the builtin_asyncgenerator feature".to_string())
+                );
+            }
             (false, false) => vm.run_frame(frame),
         }
     }

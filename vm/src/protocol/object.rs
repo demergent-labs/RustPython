@@ -1,10 +1,13 @@
 //! Object Protocol
 //! https://docs.python.org/3/c-api/object.html
 
+#[cfg(feature = "builtin_asyncgenerator")]
+use crate::builtins::asyncgenerator::PyAsyncGen;
+
 use crate::{
     builtins::{
-        pystr::AsPyStr, PyAsyncGen, PyBytes, PyDict, PyDictRef, PyGenericAlias, PyInt, PyList,
-        PyStr, PyStrRef, PyTuple, PyTupleRef, PyType, PyTypeRef,
+        pystr::AsPyStr, PyBytes, PyDict, PyDictRef, PyGenericAlias, PyInt, PyList, PyStr, PyStrRef,
+        PyTuple, PyTupleRef, PyType, PyTypeRef,
     },
     bytesinner::ByteInnerNewOptions,
     common::{hash::PyHash, str::to_ascii},
@@ -91,6 +94,7 @@ impl PyObject {
         PyIter::try_from_object(vm, self.to_owned())
     }
 
+    #[cfg(feature = "builtin_asyncgenerator")]
     // PyObject *PyObject_GetAIter(PyObject *o)
     pub fn get_aiter(&self, vm: &VirtualMachine) -> PyResult {
         if self.payload_is::<PyAsyncGen>() {
@@ -98,6 +102,12 @@ impl PyObject {
         } else {
             Err(vm.new_type_error("wrong argument type".to_owned()))
         }
+    }
+
+    #[cfg(not(feature = "builtin_asyncgenerator"))]
+    // PyObject *PyObject_GetAIter(PyObject *o)
+    pub fn get_aiter(&self, vm: &VirtualMachine) -> PyResult {
+        Err(vm.new_type_error("Only supported with feature builtin_asyncgenerator".to_owned()))
     }
 
     pub fn has_attr<'a>(&self, attr_name: impl AsPyStr<'a>, vm: &VirtualMachine) -> PyResult<bool> {

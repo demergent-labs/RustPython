@@ -1,10 +1,12 @@
+#[cfg(feature = "builtin_asyncgenerator")]
+use crate::builtins::asyncgenerator;
+
 use crate::{
     builtins::{
-        asyncgenerator, bool_, builtin_func, bytearray, bytes, classmethod, code, complex,
-        coroutine, descriptor, dict, enumerate, filter, float, frame, function, generator,
-        genericalias, getset, int, iter, list, map, mappingproxy, memory, module, namespace,
-        object, property, pystr, range, set, singletons, slice, staticmethod, super_, traceback,
-        tuple,
+        bool_, builtin_func, bytearray, bytes, classmethod, code, complex, coroutine, descriptor,
+        dict, enumerate, filter, float, frame, function, generator, genericalias, getset, int,
+        iter, list, map, mappingproxy, memory, module, namespace, object, property, pystr, range,
+        set, singletons, slice, staticmethod, super_, traceback, tuple,
         type_::{self, PyType},
         union_, weakproxy, weakref, zip,
     },
@@ -17,9 +19,13 @@ use crate::{
 #[derive(Debug, Clone)]
 #[non_exhaustive]
 pub struct TypeZoo {
+    #[cfg(feature = "builtin_asyncgenerator")]
     pub async_generator: &'static Py<PyType>,
+    #[cfg(feature = "builtin_asyncgenerator")]
     pub async_generator_asend: &'static Py<PyType>,
+    #[cfg(feature = "builtin_asyncgenerator")]
     pub async_generator_athrow: &'static Py<PyType>,
+    #[cfg(feature = "builtin_asyncgenerator")]
     pub async_generator_wrapped_value: &'static Py<PyType>,
     pub bytes_type: &'static Py<PyType>,
     pub bytes_iterator_type: &'static Py<PyType>,
@@ -133,9 +139,13 @@ impl TypeZoo {
             zip_type: zip::PyZip::init_builtin_type(),
 
             // hidden internal types. is this really need to be cached here?
+            #[cfg(feature = "builtin_asyncgenerator")]
             async_generator: asyncgenerator::PyAsyncGen::init_builtin_type(),
+            #[cfg(feature = "builtin_asyncgenerator")]
             async_generator_asend: asyncgenerator::PyAsyncGenASend::init_builtin_type(),
+            #[cfg(feature = "builtin_asyncgenerator")]
             async_generator_athrow: asyncgenerator::PyAsyncGenAThrow::init_builtin_type(),
+            #[cfg(feature = "builtin_asyncgenerator")]
             async_generator_wrapped_value:
                 asyncgenerator::PyAsyncGenWrappedValue::init_builtin_type(),
             bound_method_type: function::PyBoundMethod::init_builtin_type(),
@@ -203,6 +213,7 @@ impl TypeZoo {
         classmethod::init(context);
         generator::init(context);
         coroutine::init(context);
+        #[cfg(feature = "builtin_asyncgenerator")]
         asyncgenerator::init(context);
         int::init(context);
         float::init(context);

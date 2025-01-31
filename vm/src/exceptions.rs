@@ -617,7 +617,7 @@ impl PyBaseException {
     }
 
     #[pymethod(magic)]
-    pub(super) fn str(&self, vm: &VirtualMachine) -> PyStrRef {
+    pub fn str(&self, vm: &VirtualMachine) -> PyStrRef {
         let str_args = vm.exception_args_as_string(self.args(), true);
         match str_args.into_iter().exactly_one() {
             Err(i) if i.len() == 0 => vm.ctx.empty_str.to_owned(),

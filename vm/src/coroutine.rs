@@ -39,12 +39,15 @@ pub struct Coro {
 fn gen_name(gen: &PyObject, vm: &VirtualMachine) -> &'static str {
     let typ = gen.class();
     if typ.is(vm.ctx.types.coroutine_type) {
-        "coroutine"
-    } else if typ.is(vm.ctx.types.async_generator) {
-        "async generator"
-    } else {
-        "generator"
+        return "coroutine";
     }
+
+    #[cfg(feature = "builtin_asyncgenerator")]
+    if typ.is(vm.ctx.types.async_generator) {
+        return "async generator";
+    }
+
+    "generator"
 }
 
 impl Coro {
@@ -116,17 +119,20 @@ impl Coro {
                     let err =
                         vm.new_runtime_error(format!("{} raised StopIteration", gen_name(gen, vm)));
                     err.set_cause(Some(e));
-                    Err(err)
-                } else if gen.class().is(vm.ctx.types.async_generator)
+                    return Err(err);
+                }
+
+                #[cfg(feature = "builtin_asyncgenerator")]
+                if gen.class().is(vm.ctx.types.async_generator)
                     && e.fast_isinstance(vm.ctx.exceptions.stop_async_iteration)
                 {
                     let err = vm
                         .new_runtime_error("async generator raised StopAsyncIteration".to_owned());
                     err.set_cause(Some(e));
-                    Err(err)
-                } else {
-                    Err(e)
+                    return Err(err);
                 }
+
+                Err(e)
             }
         }
     }

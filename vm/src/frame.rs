@@ -1,7 +1,9 @@
+#[cfg(feature = "builtin_asyncgenerator")]
+use crate::builtins::asyncgenerator::PyAsyncGenWrappedValue;
+
 use crate::common::{boxvec::BoxVec, lock::PyMutex};
 use crate::{
     builtins::{
-        asyncgenerator::PyAsyncGenWrappedValue,
         function::{PyCell, PyCellRef, PyFunction},
         tuple::{PyTuple, PyTupleRef, PyTupleTyped},
         PyBaseExceptionRef, PyCode, PyCoroutine, PyDict, PyDictRef, PyGenerator, PyList, PySet,
@@ -813,7 +815,14 @@ impl ExecutingFrame<'_> {
             bytecode::Instruction::YieldValue => {
                 let value = self.pop_value();
                 let value = if self.code.flags.contains(bytecode::CodeFlags::IS_COROUTINE) {
-                    PyAsyncGenWrappedValue(value).into_pyobject(vm)
+                    #[cfg(feature = "builtin_asyncgenerator")]
+                    {
+                        PyAsyncGenWrappedValue(value).into_pyobject(vm)
+                    }
+                    #[cfg(not(feature = "builtin_asyncgenerator"))]
+                    {
+                        return Err(vm.new_not_implemented_error("YieldValue in async generator is not supported without the 'builtin_asyncgenerator' feature".to_string()));
+                    }
                 } else {
                     value
                 };
@@ -1005,9 +1014,12 @@ impl ExecutingFrame<'_> {
                 let orig_stack_len = self.state.stack.len();
 
                 let aiter = self.top_value();
-                let awaitable = if aiter.class().is(vm.ctx.types.async_generator) {
-                    vm.call_special_method(aiter, identifier!(vm, __anext__), ())?
-                } else {
+
+                #[cfg(feature = "builtin_asyncgenerator")]
+                let awaitable = vm.call_special_method(aiter, identifier!(vm, __anext__), ())?;
+
+                #[cfg(not(feature = "builtin_asyncgenerator"))]
+                let awaitable = {
                     if !aiter.has_attr("__anext__", vm).unwrap_or(false) {
                         // TODO: __anext__ must be protocol
                         let msg = format!(
@@ -1040,6 +1052,7 @@ impl ExecutingFrame<'_> {
                         ))
                     })?
                 };
+
                 self.push_value(awaitable);
                 #[cfg(debug_assertions)]
                 debug_assert_eq!(orig_stack_len + 1, self.state.stack.len());

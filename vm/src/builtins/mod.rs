@@ -2,8 +2,11 @@
 //! 7 common PyRef type aliases are exposed - PyBytesRef, PyDictRef, PyIntRef, PyListRef, PyStrRef, PyTypeRef, PyTupleRef
 //! Do not add more PyRef type aliases. They will be rare enough to use directly PyRef<T>.
 
+#[cfg(feature = "builtin_asyncgenerator")]
 pub(crate) mod asyncgenerator;
+#[cfg(feature = "builtin_asyncgenerator")]
 pub use asyncgenerator::PyAsyncGen;
+
 pub(crate) mod builtin_func;
 pub(crate) mod bytearray;
 pub use bytearray::PyByteArray;
